@@ -1,70 +1,43 @@
-import { useCallback, useState } from "react";
-import Head from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/navigation";
-import { useFormik } from "formik";
+import React from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import {
-  Alert,
-  Box,
-  Button,
-  FormHelperText,
-  Link,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useAuth } from "src/hooks/use-auth";
-import { Layout as AuthLayout } from "src/layouts/auth/layout";
+
+import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string()
+    .required("Email is required")
+    .email("Enter a valid email"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters"),
+});
 
 const Login = () => {
-  const router = useRouter();
-  const auth = useAuth();
-  const [method, setMethod] = useState("email");
-  const formik = useFormik({
-    initialValues: {
-      email: "demo@devias.io",
-      password: "Password123!",
-      submit: null,
-    },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Must be a valid email")
-        .max(255)
-        .required("Email is required"),
-      password: Yup.string().max(255).required("Password is required"),
-    }),
-    onSubmit: async (values, helpers) => {
-      try {
-        await auth.signIn(values.email, values.password);
-        router.push("/");
-      } catch (err) {
-        helpers.setStatus({ success: false });
-        helpers.setErrors({ submit: err.message });
-        helpers.setSubmitting(false);
-      }
-    },
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(validationSchema),
   });
 
-  const handleMethodChange = useCallback((event, value) => {
-    setMethod(value);
-  }, []);
-
-  const handleSkip = useCallback(() => {
-    auth.skip();
-    router.push("/");
-  }, [auth, router]);
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    console.log(data);
+  };
 
   return (
     <>
-      <Head>
-        <title>Login | Devias Kit</title>
-      </Head>
       <Box
         sx={{
-          backgroundColor: "background.paper",
           flex: "1 1 auto",
           alignItems: "center",
           display: "flex",
@@ -73,112 +46,79 @@ const Login = () => {
       >
         <Box
           sx={{
-            maxWidth: 550,
-            px: 3,
-            py: "100px",
+            maxWidth: "50vw",
+            px: 30,
+            py: "1%",
             width: "100%",
           }}
         >
           <div>
-            <Stack spacing={1} sx={{ mb: 3 }}>
-              <Typography variant="h4">Login</Typography>
+            <Stack spacing={2} sx={{ mb: 3 }}>
+              <Typography variant="h3">Register</Typography>
               <Typography color="text.secondary" variant="body2">
-                Don&apos;t have an account? &nbsp;
-                <Link
-                  component={NextLink}
-                  href="/auth/register"
-                  underline="hover"
-                  variant="subtitle2"
-                >
-                  Register
-                </Link>
+                Already have an account?
+                <Link href="/login">Log In</Link>
               </Typography>
             </Stack>
-            <Tabs onChange={handleMethodChange} sx={{ mb: 3 }} value={method}>
-              <Tab label="Email" value="email" />
-              <Tab label="Phone Number" value="phoneNumber" />
-            </Tabs>
-            {method === "email" && (
-              <form noValidate onSubmit={formik.handleSubmit}>
-                <Stack spacing={3}>
-                  <TextField
-                    error={!!(formik.touched.email && formik.errors.email)}
-                    fullWidth
-                    helperText={formik.touched.email && formik.errors.email}
-                    label="Email Address"
-                    name="email"
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="email"
-                    value={formik.values.email}
-                  />
-                  <TextField
-                    error={
-                      !!(formik.touched.password && formik.errors.password)
-                    }
-                    fullWidth
-                    helperText={
-                      formik.touched.password && formik.errors.password
-                    }
-                    label="Password"
-                    name="password"
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="password"
-                    value={formik.values.password}
-                  />
-                </Stack>
-                <FormHelperText sx={{ mt: 1 }}>
-                  Optionally you can skip.
-                </FormHelperText>
-                {formik.errors.submit && (
-                  <Typography color="error" sx={{ mt: 3 }} variant="body2">
-                    {formik.errors.submit}
-                  </Typography>
-                )}
-                <Button
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 3 }}
-                  type="submit"
-                  variant="contained"
-                >
-                  Continue
-                </Button>
-                <Button
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 3 }}
-                  onClick={handleSkip}
-                >
-                  Skip authentication
-                </Button>
-                <Alert color="primary" severity="info" sx={{ mt: 3 }}>
-                  <div>
-                    You can use <b>demo@devias.io</b> and password{" "}
-                    <b>Password123!</b>
-                  </div>
-                </Alert>
-              </form>
-            )}
-            {method === "phoneNumber" && (
-              <div>
-                <Typography sx={{ mb: 1 }} variant="h6">
-                  Not available in the demo
-                </Typography>
-                <Typography color="text.secondary">
-                  To prevent unnecessary costs we disabled this feature in the
-                  demo.
-                </Typography>
-              </div>
-            )}
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Stack spacing={2}>
+                <TextField
+                  {...register("name")}
+                  label="Name"
+                  error={!!errors.name}
+                  helperText={errors.name?.message && errors.name.message}
+                />
+
+                <TextField
+                  {...register("email")}
+                  label="Email"
+                  error={!!errors.email}
+                  helperText={errors.email?.message && errors.email.message}
+                />
+
+                <TextField
+                  {...register("password")}
+                  label="Password"
+                  type="password"
+                  error={!!errors.password}
+                  helperText={
+                    errors.password?.message && errors.password.message
+                  }
+                />
+              </Stack>
+
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                type="submit"
+                variant="contained"
+              >
+                Continue
+              </Button>
+            </form>
           </div>
+        </Box>
+        {/* <div style={{width:"50vw",height:"1000px",textAlign: "center", background:" radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)"}}> */}
+        <Box
+          sx={{
+            height: "100vh",
+            px: 20,
+            py: "10%",
+            width: "50vw",
+            background:
+              " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
+          }}
+        >
+          <img
+            src="https://material-kit-react.devias.io/assets/auth-illustration.svg"
+            alt=""
+          />
         </Box>
       </Box>
     </>
   );
 };
-
-Login.getLayout = (Login) => <AuthLayout>{Login}</AuthLayout>;
 
 export default Login;
