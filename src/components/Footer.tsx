@@ -8,24 +8,25 @@ import Link from '@mui/material/Link';
 
 export default function Footer() {
   return (
-        <Box
-          component="footer"
-          sx={{
-            py: 3,
-            px: 2,
-            mt: 'auto',
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[200]
-                : theme.palette.grey[800],
-          }}
-        >
-          <Container maxWidth="sm">
-            <Typography variant="body1">
-              My web store footer
-            </Typography>
-          </Container>
-        </Box>
+    <Box
+    component="footer"
+    sx={{
+      py: 5,
+      textAlign: 'center',
+      position: 'relative',
+      bgcolor: 'background.default',
+    }}
+  >
+    <Container>
+      
+
+      <Typography variant="caption" component="div">
+        © All rights reserved
+        <br /> made by &nbsp;
+        <Link href=""> minimals.cc </Link>
+      </Typography>
+    </Container>
+  </Box>
       
     
   );
