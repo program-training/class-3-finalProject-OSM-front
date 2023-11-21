@@ -2,17 +2,14 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 
 interface FormData {
-  name: string;
   email: string;
   password: string;
 }
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
   email: Yup.string()
     .required("Email is required")
     .email("Enter a valid email"),
@@ -53,23 +50,16 @@ const Login = () => {
           }}
         >
           <div>
-            <Stack spacing={2} sx={{ mb: 3 }}>
-              <Typography variant="h3">Register</Typography>
+            <Stack spacing={5} sx={{ mb: 3 }}>
+              <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
-                Already have an account?
-                <Link href="/login">Log In</Link>
+                Don't have an account?
+                <Link href="/">Register</Link>
               </Typography>
             </Stack>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={2}>
-                <TextField
-                  {...register("name")}
-                  label="Name"
-                  error={!!errors.name}
-                  helperText={errors.name?.message && errors.name.message}
-                />
-
+              <Stack spacing={5}>
                 <TextField
                   {...register("email")}
                   label="Email"
@@ -100,7 +90,6 @@ const Login = () => {
             </form>
           </div>
         </Box>
-        {/* <div style={{width:"50vw",height:"1000px",textAlign: "center", background:" radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)"}}> */}
         <Box
           sx={{
             height: "100vh",
