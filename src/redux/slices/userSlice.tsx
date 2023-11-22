@@ -4,7 +4,7 @@ const initialState = {
   status: false,
   imgAvater: "",
 };
-const userLoginSlice = createSlice({
+const userSlice = createSlice({
   name: "product",
   initialState,
   reducers: {
@@ -14,5 +14,5 @@ const userLoginSlice = createSlice({
   },
 });
 
-export const { setStatus } = userLoginSlice.actions;
-export default userLoginSlice.reducer;
+export const { setStatus } = userSlice.actions;
+export default userSlice.reducer;
