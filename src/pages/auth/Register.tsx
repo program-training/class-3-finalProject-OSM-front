@@ -1,8 +1,8 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   name: string;
@@ -11,16 +11,20 @@ interface FormData {
 }
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
+  name: Yup.string()
+    .required("Name is required")
+    .matches(/[a-zA-Z].*[a-zA-Z]/, "Name must contain at least two letters"),
   email: Yup.string()
     .required("Email is required")
     .email("Enter a valid email"),
   password: Yup.string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter"),
 });
 
 const Register = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -29,8 +33,28 @@ const Register = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}users/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const jsonResponse = await response.json();
+      console.log(jsonResponse);
+      if (jsonResponse.accessToken) {
+        localStorage.setItem("token", jsonResponse.accessToken);
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
   };
 
   return (

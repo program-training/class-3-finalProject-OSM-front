@@ -15,7 +15,8 @@ const validationSchema = Yup.object().shape({
     .email("Enter a valid email"),
   password: Yup.string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter"),
 });
 
 const Login = () => {
