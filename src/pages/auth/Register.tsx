@@ -13,8 +13,12 @@ interface FormData {
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-  password: Yup.string().required("Password is required").min(8, "Password must be at least 8 characters"),
+  email: Yup.string()
+    .required("Email is required")
+    .email("Enter a valid email"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters"),
 });
 
 const Register = () => {
@@ -53,20 +57,44 @@ const Register = () => {
               <Typography variant="h3">Register</Typography>
               <Typography color="text.secondary" variant="body2">
                 Already have an account?
-                <Link href="/login">Log In</Link>
+                <Link href="/">Log In</Link>
               </Typography>
             </Stack>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
-                <TextField {...register("name")} label="Name" error={!!errors.name} helperText={errors.name?.message && errors.name.message} />
+                <TextField
+                  {...register("name")}
+                  label="Name"
+                  error={!!errors.name}
+                  helperText={errors.name?.message && errors.name.message}
+                />
 
-                <TextField {...register("email")} label="Email" error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
+                <TextField
+                  {...register("email")}
+                  label="Email"
+                  error={!!errors.email}
+                  helperText={errors.email?.message && errors.email.message}
+                />
 
-                <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
+                <TextField
+                  {...register("password")}
+                  label="Password"
+                  type="password"
+                  error={!!errors.password}
+                  helperText={
+                    errors.password?.message && errors.password.message
+                  }
+                />
               </Stack>
 
-              <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                type="submit"
+                variant="contained"
+              >
                 Continue
               </Button>
             </form>
@@ -79,10 +107,14 @@ const Register = () => {
             px: 20,
             py: "10%",
             width: "50vw",
-            background: " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
+            background:
+              " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
           }}
         >
-          <img src="https://material-kit-react.devias.io/assets/auth-illustration.svg" alt="" />
+          <img
+            src="https://material-kit-react.devias.io/assets/auth-illustration.svg"
+            alt=""
+          />
         </Box>
       </Box>
     </>

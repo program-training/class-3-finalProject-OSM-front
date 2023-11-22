@@ -1,4 +1,3 @@
-
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,11 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import {Button} from "@mui/material";
+import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
-
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,9 +33,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
 
-
   useEffect(() => {
-
     const fetchData = async () => {
       try {
         const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`);
@@ -53,7 +49,10 @@ export function LatestOrders() {
   }, []);
 
   return (
-    <TableContainer component={Paper} sx={{ width: "50%" , height:"80vh", margin: "2%" }}>
+    <TableContainer
+      component={Paper}
+      sx={{ width: "50%", height: "80vh", margin: "2%" }}
+    >
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
@@ -70,13 +69,15 @@ export function LatestOrders() {
               <StyledTableCell component="th" scope="row">
                 {order._id}
               </StyledTableCell>
-              <StyledTableCell align="right">{order.shippingDetails?.address || "N/A"}</StyledTableCell>
-              <StyledTableCell align="right">{order.price}</StyledTableCell>
-              <StyledTableCell align="right">{order.shippingDetails?.orderType || "N/A"}</StyledTableCell>
               <StyledTableCell align="right">
-                <Button  variant="outlined">
-                  {order.status}
-                </Button>
+                {order.shippingDetails?.address || "N/A"}
+              </StyledTableCell>
+              <StyledTableCell align="right">{order.price}</StyledTableCell>
+              <StyledTableCell align="right">
+                {order.shippingDetails?.orderType || "N/A"}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                <Button variant="outlined">{order.status}</Button>
               </StyledTableCell>
             </StyledTableRow>
           ))}

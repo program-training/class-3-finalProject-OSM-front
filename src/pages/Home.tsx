@@ -1,10 +1,12 @@
-import React from 'react'
-import { LatestOrders } from '../components/LatestOrders'
+import React from "react";
+import { LatestOrders } from "../components/LatestOrders";
 
 function Home() {
   return (
-    <div><LatestOrders/></div>
-  )
+    <div>
+      <LatestOrders />
+    </div>
+  );
 }
 
-export default Home
+export default Home;
