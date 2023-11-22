@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 
+type StatusColor = "inherit" | "warning" | "success" | "error" | "primary" | "secondary" | "info";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -29,6 +31,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const statusMap: { [key: string]: StatusColor } = {
+  Pending: "warning",
+  Delivered: "success",
+  Refunded: "error",
+};
 
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
@@ -77,7 +85,12 @@ export function LatestOrders() {
                 {order.shippingDetails?.orderType || "N/A"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                <Button variant="outlined">{order.status}</Button>
+                <Button
+                  color={statusMap[order.status] || "error"}
+                  variant="outlined"
+                >
+                  {order.status}
+                </Button>
               </StyledTableCell>
             </StyledTableRow>
           ))}
