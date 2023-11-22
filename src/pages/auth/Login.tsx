@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   email: string;
@@ -20,6 +21,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Login = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -31,7 +33,7 @@ const Login = () => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const response = await fetch(
-        "https://osm-1-2.onrender.com/api/users/login",
+        `${import.meta.env.VITE_BASE_URL}users/login`,
         {
           method: "POST",
           headers: {
@@ -44,6 +46,10 @@ const Login = () => {
       const json = await response.json();
 
       console.log(json);
+      if (json.accessToken) {
+        localStorage.setItem("token", json.accessToken);
+        navigate("/home");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -72,7 +78,7 @@ const Login = () => {
               <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
                 Don't have an account?
-                <Link href="/">Register</Link>
+                <Link href="/register">Register</Link>
               </Typography>
             </Stack>
 
