@@ -17,7 +17,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<LatestOrders />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/a" element={<Login />} />
+              <Route path="/register" element={<Register/>} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -50,7 +50,7 @@ const Login = () => {
               <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
               Don't have an account?
-                <Link href="/">Register</Link>
+                <Link href="/register">Register</Link>
               </Typography>
             </Stack>
 

@@ -1,109 +1,3 @@
-//   import { format } from "date-fns";
-//   import PropTypes from "prop-types";
-//   import { useEffect, useState } from "react";
-//   import axios from "axios";
-//   import {OrderInterface} from "../interface/orderInterface";
-//   import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-//   import {
-//     Box,
-//     Button,
-//     Card,
-//     CardActions,
-//     CardHeader,
-//     Divider,
-//     SvgIcon,
-//     Table,
-//     TableBody,
-//     TableCell,
-//     TableHead,
-//     TableRow,
-//   } from "@mui/material";
-
-//   import SimpleBar from "simplebar-react";
-//   //-------------------------------------------------
-//   import { styled } from "@mui/system";
-
-//   export const Scrollbar = styled(SimpleBar)``;
-
-//   const statusMap: Record<string, string> = {
-//     pending: "warning",
-//     delivered: "success",
-//     refunded: "error",
-//     default: "primary",
-//   };
-//   //-------------------------------------------------------
-//   export const LatestOrders: React.FC = () => {
-//     const [orders, setOrders] = useState<OrderInterface[]>([]);
-
-//     useEffect(() => {
-//       const fetchData = async () => {
-//         try {
-//           const response = await axios.get<OrderInterface[]>(
-//             "https://osm-1-2.onrender.com/api/orders"
-//           );
-//           const ordersData: OrderInterface[] = response.data;
-//           console.log(ordersData);
-
-//           setOrders(ordersData);
-//         } catch (error) {
-//           console.error("Error fetching data:", error);
-//         }
-//       };
-
-//       fetchData();
-//     }, []);
-
-//     return (
-//       <Card>
-//         <CardHeader title="Latest Orders" />
-//         <Scrollbar sx={{ flexGrow: 1 }}>
-//           <Box sx={{ minWidth: 800 }}>
-//             <Table>
-//               <TableHead>
-//                 <TableRow>
-//                   <TableCell>Order</TableCell>
-//                   <TableCell>Customer</TableCell>
-//                   <TableCell sortDirection="desc">Date</TableCell>
-//                   <TableCell>Status</TableCell>
-//                 </TableRow>
-//               </TableHead>
-//               <TableBody>
-//                 {orders.map((order) => {
-//                   return (
-//                     <TableRow hover key={order.id}>
-//                       <TableCell>{order.id}</TableCell>
-//                       {/* <TableCell>{order.shippingDetails.userId}</TableCell> */}
-//                       <TableCell>{order.orderTime}</TableCell>
-//                       <TableCell>
-//                         <Button color={statusMap[order.status] || statusMap.default} variant="outlined">
-//                           {order.status}
-//                         </Button>
-//                       </TableCell>
-//                     </TableRow>
-//                   );
-//                 })}
-//               </TableBody>
-//             </Table>
-//           </Box>
-//         </Scrollbar>
-//         <Divider />
-//         <CardActions sx={{ justifyContent: "flex-end" }}>
-//           <Button
-//             color="inherit"
-//             endIcon={
-//               <SvgIcon fontSize="small">
-//                 <KeyboardArrowRightIcon />
-//               </SvgIcon>
-//             }
-//             size="small"
-//             variant="text"
-//           >
-//             View all
-//           </Button>
-//         </CardActions>
-//       </Card>
-//     );
-//   };
 
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -146,8 +40,7 @@ export function LatestOrders() {
 
     const fetchData = async () => {
       try {
-        //const response = await axios.get<OrderInterface[]>(`${import.meta.env.BASE_URL}orders`);
-        const response = await axios.get<OrderInterface[]>(`https://osm-1-2.onrender.com/api/orders`);
+        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`);
         const ordersData: OrderInterface[] = response.data;
         console.log(ordersData);
         setOrders(ordersData);

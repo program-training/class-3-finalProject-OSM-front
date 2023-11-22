@@ -1,8 +1,9 @@
 import React from 'react'
+import { LatestOrders } from '../components/LatestOrders'
 
 function Home() {
   return (
-    <div>Home</div>
+    <div><LatestOrders/></div>
   )
 }
 
