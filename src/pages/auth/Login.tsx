@@ -3,6 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import axios from "axios";
 
 interface FormData {
   email: string;
@@ -27,8 +28,25 @@ const Login = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      const response = await fetch(
+        "https://osm-1-2.onrender.com/api/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const json = await response.json();
+
+      console.log(json);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -77,7 +95,6 @@ const Login = () => {
                   }
                 />
               </Stack>
-
               <Button
                 fullWidth
                 size="large"
