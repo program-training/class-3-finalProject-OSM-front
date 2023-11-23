@@ -4,7 +4,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { error } from "console";
 
 interface FormData {
   email: string;
@@ -53,7 +52,7 @@ const Login = () => {
         localStorage.setItem("token", json.accessToken);
         navigate("/home");
       } else {
-        setLoginError("Incorrect email or password");
+        setLoginError(json.message || "Login failed");
       }
     } catch (error) {
       console.log(error);
