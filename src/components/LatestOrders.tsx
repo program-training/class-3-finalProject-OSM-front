@@ -6,12 +6,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
+import { Button, Box, Grid, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { OverviewTotalProfit } from "../components/OverviewTotalProfit";
+import { OverviewTotalCustomers } from "../components/OverviewTotalCustomers";
+import OverviewSection from "./OverviewSection";
 
-type StatusColor = "inherit" | "warning" | "success" | "error" | "primary" | "secondary" | "info";
+type StatusColor = "#FFB74D" | "#76FF03" | "#ff3c00a2";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -32,10 +36,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const statusMap: { [key: string]: StatusColor } = {
-  Pending: "warning",
-  Delivered: "success",
-  Refunded: "error",
+const statusMap: { [key: string]: string } = {
+  Pending: "#ffb84da9",
+  Delivered: "#74ff03a0",
+  Refunded: "#FF3D00",
 };
 
 export function LatestOrders() {
@@ -56,46 +60,82 @@ export function LatestOrders() {
     fetchData();
   }, []);
 
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`);
+      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+    } catch (error) {
+      console.error(`Error deleting order with ID ${orderId}:`, error);
+    }
+  };
+
+  const handleChangeStatus = async (orderId: string) => {
+    try {
+      await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
+        shippingDetails: {
+          orderType: "Only",
+        },
+      });
+
+      // Fetch updated orders after changing status
+      const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`);
+      const updatedOrders: OrderInterface[] = response.data;
+      setOrders(updatedOrders);
+    } catch (error: any) {
+      console.error(`Error changing status for order with ID ${orderId}:`, error.response?.data || error.message);
+    }
+  };
+
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ width: "50%", height: "80vh", margin: "2%" }}
-    >
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Order ID</StyledTableCell>
-            <StyledTableCell align="right">Address</StyledTableCell>
-            <StyledTableCell align="right">Price</StyledTableCell>
-            <StyledTableCell align="right">Order Type</StyledTableCell>
-            <StyledTableCell align="right">Status</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {orders.map((order) => (
-            <StyledTableRow key={order._id}>
-              <StyledTableCell component="th" scope="row">
-                {order._id}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {order.shippingDetails?.address || "N/A"}
-              </StyledTableCell>
-              <StyledTableCell align="right">{order.price}</StyledTableCell>
-              <StyledTableCell align="right">
-                {order.shippingDetails?.orderType || "N/A"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                <Button
-                  color={statusMap[order.status] || "error"}
-                  variant="outlined"
-                >
-                  {order.status}
-                </Button>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box sx={{ margin: "20px" }}>
+      <TableContainer component={Paper} sx={{ width: "70%", height: "80vh", margin: "2%" }}>
+        <Table sx={{ minWidth: 700 , marginLeft:8 }} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Order ID</StyledTableCell>
+              <StyledTableCell align="center">Address</StyledTableCell>
+              <StyledTableCell align="center">Price</StyledTableCell>
+              <StyledTableCell align="center">Order Type</StyledTableCell>
+              <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell align="center">Delete Order</StyledTableCell>
+              <StyledTableCell align="center">Change Status</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orders.map((order) => {
+              let colorBG = statusMap[order.status] || "#FF3D00";
+              return (
+                <StyledTableRow key={order._id}>
+                  <StyledTableCell component="th" scope="row">
+                    {order._id}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{order.shippingDetails?.address || "N/A"}</StyledTableCell>
+                  <StyledTableCell align="center">{order.price}</StyledTableCell>
+                  <StyledTableCell align="center">{order.shippingDetails?.orderType || "N/A"}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    <Box sx={{ textAlign: "center", backgroundColor: colorBG, borderRadius: 12 }}>{order.status}</Box>
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    <Button disabled={order.status !== "Pending"} onClick={() => handleDeleteOrder(order._id)} variant="outlined" startIcon={<DeleteIcon />}>
+                      Delete
+                    </Button>
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <Button
+                    
+                      disabled={order.status !== "Pending" || !order.shippingDetails || order.shippingDetails.orderType !== "Pickup"}
+                      onClick={() => handleChangeStatus(order._id)}
+                      variant="outlined"
+                    >
+                      Change Status
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 }
