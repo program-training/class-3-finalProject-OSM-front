@@ -14,7 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { OverviewTotalProfit } from "../components/OverviewTotalProfit";
 import { OverviewTotalCustomers } from "../components/OverviewTotalCustomers";
 import OverviewSection from "./OverviewSection";
-
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzgsImVtYWlsIjoidmlnQG1haWxuaGIuY29tIiwicGFzc3dvcmQiOiIxMjM0NTZBYyIsImlzYWRtaW4iOnRydWUsImlhdCI6MTcwMDcyNDM4NH0.6cdsBG-RpjB_KLB2-JjuOB8Zp5Tt-W31BYsmNe20FUw"
 type StatusColor = "#FFB74D" | "#76FF03" | "#ff3c00a2";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -47,8 +47,13 @@ export function LatestOrders() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem('token');
       try {
-        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`);
+        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
+          headers: {
+            "Authorization": token,
+          },
+        });
         const ordersData: OrderInterface[] = response.data;
         console.log(ordersData);
         setOrders(ordersData);
@@ -71,10 +76,8 @@ export function LatestOrders() {
 
   const handleChangeStatus = async (orderId: string) => {
     try {
-      await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
-        shippingDetails: {
-          orderType: "Only",
-        },
+        await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
+        status:"Delivered",
       });
 
       // Fetch updated orders after changing status
@@ -123,7 +126,7 @@ export function LatestOrders() {
                   <StyledTableCell align="center">
                     <Button
                     
-                      disabled={order.status !== "Pending" || !order.shippingDetails || order.shippingDetails.orderType !== "Pickup"}
+                      disabled={!order.shippingDetails || order.shippingDetails.orderType !== "Pickup"}
                       onClick={() => handleChangeStatus(order._id)}
                       variant="outlined"
                     >
