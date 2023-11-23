@@ -27,7 +27,7 @@ export const OverviewTotalProfit = (props:Props) => {
               color="text.secondary"
               variant="overline"
             >
-              Total Profit
+              Total sales
             </Typography>
             <Typography variant="h4">
               {value}
