@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 
+type StatusColor = "inherit" | "warning" | "success" | "error" | "primary" | "secondary" | "info";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -30,16 +32,19 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const statusMap: { [key: string]: StatusColor } = {
+  Pending: "warning",
+  Delivered: "success",
+  Refunded: "error",
+};
+
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //const response = await axios.get<OrderInterface[]>(`${import.meta.env.BASE_URL}orders`);
-        const response = await axios.get<OrderInterface[]>(
-          `https://osm-1-2.onrender.com/api/orders`
-        );
+        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`);
         const ordersData: OrderInterface[] = response.data;
         console.log(ordersData);
         setOrders(ordersData);
@@ -80,7 +85,12 @@ export function LatestOrders() {
                 {order.shippingDetails?.orderType || "N/A"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                <Button variant="outlined">{order.status}</Button>
+                <Button
+                  color={statusMap[order.status] || "error"}
+                  variant="outlined"
+                >
+                  {order.status}
+                </Button>
               </StyledTableCell>
             </StyledTableRow>
           ))}

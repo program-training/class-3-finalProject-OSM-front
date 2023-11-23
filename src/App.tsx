@@ -4,7 +4,6 @@ import Layout from "./pages/Layout";
 import { CssBaseline } from "@mui/material";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
-import { LatestOrders } from "./components/LatestOrders";
 import Home from "./pages/Home";
 
 function App() {

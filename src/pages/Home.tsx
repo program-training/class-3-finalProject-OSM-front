@@ -1,4 +1,3 @@
-import React from "react";
 import { LatestOrders } from "../components/LatestOrders";
 
 function Home() {
