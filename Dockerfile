@@ -1,14 +1,26 @@
-FROM node:18-alpine as builder
+FROM nginx:lts-slim 
+
+RUN apt-get update \
+    && apt-get install -y build-essential
+
 WORKDIR /app
 
-COPY package*.json ./
+
+COPY package*.json tsconfig.json ./
+
+
 RUN npm install
 
-COPY . .
-RUN npm run build
+RUN npm install -g typescript
 
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
+COPY ./src ./src
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN tsc
+
+ENV PORT=8181
+
+EXPOSE 8181
+
+COPY ./src/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+CMD [ "node", "./dist/server.js" ]
