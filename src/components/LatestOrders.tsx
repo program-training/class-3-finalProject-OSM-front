@@ -70,7 +70,6 @@ export function LatestOrders() {
         status: "Delivered",
       });
 
-      // Fetch updated orders after changing status
       const response = await axios.get<OrderInterface[]>(
         `${import.meta.env.VITE_BASE_URL}orders`
       );
@@ -87,7 +86,6 @@ export function LatestOrders() {
 
   return (
     <Box sx={{ margin: "20px" }}>
-      {/* Search Bar */}
       <TextField
         label="Search"
         variant="outlined"
