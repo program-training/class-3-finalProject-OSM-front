@@ -1,11 +1,9 @@
-import { Box, Button, Paper, TextField, Table, TableBody, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Box, Paper, TextField, Table, TableBody, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { OrderInterface } from "../interface/orderInterface";
-import { StyledTableCell, StyledTableRow } from "../style/styles";
+import { StyledTableCell } from "../style/styles";
 import TableRowComponent from "./TableRowComponent"
-import { log } from "console";
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
@@ -105,4 +103,3 @@ export function LatestOrders() {
     </Box>
   );
 }
-

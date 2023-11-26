@@ -1,18 +1,26 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
+interface UserState {
+  status: boolean;
+  user:string
+}
+
+const initialState: UserState = {
   status: false,
-  imgAvater: "",
+  user:"connect"
 };
-const userSlice = createSlice({
-  name: "product",
+
+export const userSlice = createSlice({
+  name: 'user',
   initialState,
   reducers: {
-    setStatus: (state, action) => {
+    setStatus: (state, action: PayloadAction<boolean>) => {
       state.status = action.payload;
     },
-  },
+    setUser: (state, action:PayloadAction<string>) => {
+      state.user = action.payload;
+    }
+  }
 });
-
-export const { setStatus } = userSlice.actions;
+export const { setStatus , setUser } = userSlice.actions; 
 export default userSlice.reducer;
