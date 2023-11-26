@@ -1,9 +1,8 @@
-import React from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 interface FormData {
@@ -17,11 +16,14 @@ const validationSchema = Yup.object().shape({
     .email("Enter a valid email"),
   password: Yup.string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
+    .matches(/[0-9]/, "Password must contain at least one number"),
 });
 
 const Login = () => {
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState<string>("");
   const {
     register,
     handleSubmit,
@@ -48,7 +50,10 @@ const Login = () => {
       console.log(json);
       if (json.accessToken) {
         localStorage.setItem("token", json.accessToken);
+        localStorage.setItem("email", data.email);
         navigate("/home");
+      } else {
+        setLoginError(json.message || "Login failed");
       }
     } catch (error) {
       console.log(error);
@@ -111,6 +116,7 @@ const Login = () => {
                 Continue
               </Button>
             </form>
+            <p>{loginError}</p>
           </div>
         </Box>
         <Box

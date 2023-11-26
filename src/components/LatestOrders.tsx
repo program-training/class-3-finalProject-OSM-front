@@ -1,91 +1,146 @@
-import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
+import {
+  Box,
+  Paper,
+  TextField,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
+import { StyledTableCell } from "../style/styles";
+import TableRowComponent from "./TableRowComponent";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+const statusMap: { [key: string]: string } = {
+  Pending: "#ffb84da9",
+  Delivered: "#74ff03a0",
+  Refunded: "#ff00009e",
+};
 
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredOrders, setFilteredOrders] = useState<OrderInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
       try {
-        //const response = await axios.get<OrderInterface[]>(`${import.meta.env.BASE_URL}orders`);
         const response = await axios.get<OrderInterface[]>(
-          `https://osm-1-2.onrender.com/api/orders`
+          `${import.meta.env.VITE_BASE_URL}orders`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
         );
         const ordersData: OrderInterface[] = response.data;
-        console.log(ordersData);
         setOrders(ordersData);
+
+        // Filter orders based on search term
+        const filteredOrders = ordersData.filter(
+          (order) =>
+            order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.shippingDetails?.address
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            order.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.shippingDetails.orderType
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+        );
+
+        setFilteredOrders(filteredOrders);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [searchTerm]);
+
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`);
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderId)
+      );
+    } catch (error) {
+      console.error(`Error deleting order with ID ${orderId}:`, error);
+    }
+  };
+
+  const handleChangeStatus = async (orderId: string) => {
+    try {
+      await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
+        status: "Delivered",
+      });
+
+      // Fetch updated orders after changing status
+      const response = await axios.get<OrderInterface[]>(
+        `${import.meta.env.VITE_BASE_URL}orders`
+      );
+      const updatedOrders: OrderInterface[] = response.data;
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+    } catch (error: any) {
+      console.error(
+        `Error changing status for order with ID ${orderId}:`,
+        error.response?.data || error.message
+      );
+    }
+  };
 
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ width: "50%", height: "80vh", margin: "2%" }}
-    >
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Order ID</StyledTableCell>
-            <StyledTableCell align="right">Address</StyledTableCell>
-            <StyledTableCell align="right">Price</StyledTableCell>
-            <StyledTableCell align="right">Order Type</StyledTableCell>
-            <StyledTableCell align="right">Status</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {orders.map((order) => (
-            <StyledTableRow key={order._id}>
-              <StyledTableCell component="th" scope="row">
-                {order._id}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {order.shippingDetails?.address || "N/A"}
-              </StyledTableCell>
-              <StyledTableCell align="right">{order.price}</StyledTableCell>
-              <StyledTableCell align="right">
-                {order.shippingDetails?.orderType || "N/A"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                <Button variant="outlined">{order.status}</Button>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box sx={{ margin: "20px" }}>
+      {/* Search Bar */}
+      <TextField
+        label="Search"
+        variant="outlined"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+
+      <TableContainer component={Paper} sx={{ height: "80vh" }}>
+        <Table sx={{}} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Order ID</StyledTableCell>
+              <StyledTableCell align="center">Address</StyledTableCell>
+              <StyledTableCell align="center">Price</StyledTableCell>
+              <StyledTableCell align="center">Order Type</StyledTableCell>
+              <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell align="center">Delete Order</StyledTableCell>
+              <StyledTableCell align="center">Change Status</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {searchTerm
+              ? filteredOrders.map((order) => (
+                  <TableRowComponent
+                    key={order._id}
+                    order={order}
+                    handleDeleteOrder={handleDeleteOrder}
+                    handleChangeStatus={handleChangeStatus}
+                    statusMap={statusMap}
+                  />
+                ))
+              : orders.map((order) => (
+                  <TableRowComponent
+                    key={order._id}
+                    order={order}
+                    handleDeleteOrder={handleDeleteOrder}
+                    handleChangeStatus={handleChangeStatus}
+                    statusMap={statusMap}
+                  />
+                ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 }
