@@ -50,6 +50,7 @@ const Login = () => {
       console.log(json);
       if (json.accessToken) {
         localStorage.setItem("token", json.accessToken);
+        localStorage.setItem("email", data.email);
         navigate("/home");
       } else {
         setLoginError(json.message || "Login failed");

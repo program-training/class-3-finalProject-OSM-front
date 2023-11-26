@@ -48,9 +48,9 @@ const Register = () => {
       );
 
       const jsonResponse = await response.json();
-      console.log(jsonResponse);
       if (jsonResponse.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
+        localStorage.setItem("email", data.email);
         navigate("/home");
       }
     } catch (error) {
