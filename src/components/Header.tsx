@@ -1,39 +1,24 @@
-import { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { IconButton } from "@mui/material";
 
 const Header = () => {
-  const [statusUser, setStatusUser] = useState(localStorage.getItem("email"));
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setStatusUser(localStorage.getItem("email"));
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+  const statusUser = localStorage.getItem("token");
+  const isUserLoggedIn = !!statusUser;
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar sx={{ background: "#121858" }} position="static">
-        <Toolbar variant="dense">
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+      <AppBar position="static">
+        <Toolbar
+          variant="dense"
+          sx={{ justifyContent: "space-between", paddingRight: "16px" }}
+        >
           <Typography variant="h6" color="inherit" component="div">
-            Photos
+            Order System
+          </Typography>
+          <Typography variant="h6" color="inherit" component="div">
+            {isUserLoggedIn ? "User: User is logged in" : "User: Guest"}
           </Typography>
         </Toolbar>
       </AppBar>
