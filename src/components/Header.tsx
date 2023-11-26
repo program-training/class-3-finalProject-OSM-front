@@ -46,10 +46,7 @@ const Header = () => {
   return (
     <RootBox>
       <AppBar position="static">
-        <Toolbar
-          variant="dense"
-          sx={{ justifyContent: "space-between", paddingRight: "16px" }}
-        >
+        <Toolbar variant="dense" sx={{ justifyContent: "space-between", paddingRight: "16px" }}>
           <TitleTypography variant="h6" color="inherit">
             Order System
           </TitleTypography>
