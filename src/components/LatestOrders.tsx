@@ -1,18 +1,9 @@
-import {
-  Box,
-  Paper,
-  TextField,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { Box, Paper, TextField, Table, TableBody, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 import { StyledTableCell } from "../style/styles";
-import TableRowComponent from "./TableRowComponent";
+import TableRowComponent from "./TableRowComponent"
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
