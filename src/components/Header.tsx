@@ -1,11 +1,19 @@
+import { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
 const Header = () => {
-  const statusUser = localStorage.getItem("token");
-  const isUserLoggedIn = !!statusUser;
+  const [statusUser, setUser] = useState("Guest");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUser(localStorage.getItem("email") || "Guest");
+    }, 1);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -18,7 +26,7 @@ const Header = () => {
             Order System
           </Typography>
           <Typography variant="h6" color="inherit" component="div">
-            {isUserLoggedIn ? "User: User is logged in" : "User: Guest"}
+            {statusUser}
           </Typography>
         </Toolbar>
       </AppBar>
