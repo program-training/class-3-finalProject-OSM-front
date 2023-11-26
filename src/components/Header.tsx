@@ -21,16 +21,18 @@ const Header = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar
-          variant="dense"
-          sx={{ justifyContent: "space-between", paddingRight: "16px" }}
-        >
+      <AppBar sx={{ background: "#121858" }} position="static">
+        <Toolbar variant="dense">
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography variant="h6" color="inherit" component="div">
-            Order System
-          </Typography>
-          <Typography variant="h6" color="inherit" component="div">
-            {statusUser ? `User: ${statusUser}` : "User: Guest"}
+            Photos
           </Typography>
         </Toolbar>
       </AppBar>
