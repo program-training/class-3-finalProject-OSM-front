@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -15,12 +16,14 @@ const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
-    .matches(/[a-zA-Z]/, "Password must contain at least one letter"),
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
+    .matches(/[0-9]/, "Password must contain at least one number"),
 });
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loginError, setLoginError] = useState<string>("");
   const {
     register,
     handleSubmit,
@@ -49,6 +52,8 @@ const Login = () => {
         dispatch(setStatus(true));
         dispatch(setUser(data.email));
         navigate("/home");
+      } else {
+        setLoginError(json.message || "Login failed");
       }
     } catch (error) {
       console.log(error);
@@ -92,6 +97,7 @@ const Login = () => {
                 Continue
               </Button>
             </form>
+            <p>{loginError}</p>
           </div>
         </Box>
         <Box

@@ -20,11 +20,14 @@ export function LatestOrders() {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
-          headers: {
-            Authorization: token,
-          },
-        });
+        const response = await axios.get<OrderInterface[]>(
+          `${import.meta.env.VITE_BASE_URL}orders`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
         const ordersData: OrderInterface[] = response.data;
         setOrders(ordersData);
 
@@ -32,9 +35,13 @@ export function LatestOrders() {
         const filteredOrders = ordersData.filter(
           (order) =>
             order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.shippingDetails?.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.shippingDetails?.address
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
             order.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.shippingDetails.orderType.toLowerCase().includes(searchTerm.toLowerCase())
+            order.shippingDetails.orderType
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
         );
 
         setFilteredOrders(filteredOrders);
@@ -49,7 +56,9 @@ export function LatestOrders() {
   const handleDeleteOrder = async (orderId: string) => {
     try {
       await axios.delete(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`);
-      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId)); 
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderId)
+      );
     } catch (error) {
       console.error(`Error deleting order with ID ${orderId}:`, error);
     }
@@ -62,19 +71,30 @@ export function LatestOrders() {
       });
 
       // Fetch updated orders after changing status
-      const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`);
+      const response = await axios.get<OrderInterface[]>(
+        `${import.meta.env.VITE_BASE_URL}orders`
+      );
       const updatedOrders: OrderInterface[] = response.data;
       setOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
     } catch (error: any) {
-      console.error(`Error changing status for order with ID ${orderId}:`, error.response?.data || error.message);
+      console.error(
+        `Error changing status for order with ID ${orderId}:`,
+        error.response?.data || error.message
+      );
     }
   };
 
   return (
     <Box sx={{ margin: "20px" }}>
       {/* Search Bar */}
-      <TextField label="Search" variant="outlined" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ marginBottom: 2 }} />
+      <TextField
+        label="Search"
+        variant="outlined"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
 
       <TableContainer component={Paper} sx={{ height: "80vh" }}>
         <Table sx={{}} aria-label="customized table">
@@ -92,10 +112,22 @@ export function LatestOrders() {
           <TableBody>
             {searchTerm
               ? filteredOrders.map((order) => (
-                  <TableRowComponent key={order._id} order={order} handleDeleteOrder={handleDeleteOrder} handleChangeStatus={handleChangeStatus} statusMap={statusMap} />
+                  <TableRowComponent
+                    key={order._id}
+                    order={order}
+                    handleDeleteOrder={handleDeleteOrder}
+                    handleChangeStatus={handleChangeStatus}
+                    statusMap={statusMap}
+                  />
                 ))
               : orders.map((order) => (
-                  <TableRowComponent key={order._id} order={order} handleDeleteOrder={handleDeleteOrder} handleChangeStatus={handleChangeStatus} statusMap={statusMap} />
+                  <TableRowComponent
+                    key={order._id}
+                    order={order}
+                    handleDeleteOrder={handleDeleteOrder}
+                    handleChangeStatus={handleChangeStatus}
+                    statusMap={statusMap}
+                  />
                 ))}
           </TableBody>
         </Table>

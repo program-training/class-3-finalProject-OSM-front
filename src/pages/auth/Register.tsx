@@ -20,7 +20,8 @@ const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
-    .matches(/[a-zA-Z]/, "Password must contain at least one letter"),
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
+    .matches(/[0-9]/, "Password must contain at least one number"),
 });
 
 const Register = () => {
@@ -47,9 +48,9 @@ const Register = () => {
       );
 
       const jsonResponse = await response.json();
-      console.log(jsonResponse);
       if (jsonResponse.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
+        localStorage.setItem("email", data.email);
         navigate("/home");
       }
     } catch (error) {
