@@ -4,8 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import {useDispatch } from "react-redux";
-import { setStatus ,setUser } from "../../redux/slices/userSlice";
+import { useDispatch } from "react-redux";
+import { setStatus, setUser } from "../../redux/slices/userSlice";
 interface FormData {
   email: string;
   password: string;
@@ -59,6 +59,9 @@ const Login = () => {
       console.log(error);
     }
   };
+  const handleForgotPassword = () => {
+    navigate("/forgotPassword");
+  };
 
   return (
     <>
@@ -93,6 +96,9 @@ const Login = () => {
 
                 <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
               </Stack>
+              <Button variant="text" onClick={handleForgotPassword}>
+                Forgot Password?
+              </Button>
               <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                 Continue
               </Button>
