@@ -31,11 +31,11 @@ const TableRowComponent: React.FC<TableRowProps> = ({ order, handleDeleteOrder, 
       </Button>
     </StyledTableCell>
     <StyledTableCell align="center">
-      <Button disabled={!order.shippingDetails || order.shippingDetails.orderType !== "Pickup"} onClick={() => handleChangeStatus(order._id)} variant="outlined">
+      <Button disabled={!order.shippingDetails || order.shippingDetails.orderType !== "Pickup" || order.status !== "Pending" } onClick={() => handleChangeStatus(order._id)} variant="outlined">
         Change Status
       </Button>
     </StyledTableCell>
-  </StyledTableRow>
+  </StyledTableRow> 
   );
 };
 

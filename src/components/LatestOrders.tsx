@@ -65,14 +65,21 @@ export function LatestOrders() {
   };
 
   const handleChangeStatus = async (orderId: string) => {
+    const token = localStorage.getItem("token");
     try {
       await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
         status: "Delivered",
       });
 
       const response = await axios.get<OrderInterface[]>(
-        `${import.meta.env.VITE_BASE_URL}orders`
+        `${import.meta.env.VITE_BASE_URL}orders`,
+        {
+          headers: {
+            Authorization: token, // Include the authorization token here as well
+          },
+        }
       );
+  
       const updatedOrders: OrderInterface[] = response.data;
       setOrders(updatedOrders);
       setFilteredOrders(updatedOrders);

@@ -4,8 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import {useDispatch } from "react-redux";
-import { setStatus ,setUser } from "../../redux/slices/userSlice";
+import { useDispatch } from "react-redux";
+import { setStatus, setUser } from "../../redux/slices/userSlice";
 interface FormData {
   email: string;
   password: string;

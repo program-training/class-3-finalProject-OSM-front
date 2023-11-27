@@ -35,7 +35,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const UserCircle = () => {
   const navigate = useNavigate();
-  const userStatus = useSelector((state:RootState) => state.user.status);
+  const userStatus = useSelector((state: RootState) => state.user.status);
   const dispatch = useDispatch();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -60,10 +60,10 @@ const UserCircle = () => {
   };
 
   return (
-    <StyledBadge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} variant={userStatus &&"dot" ||"standard"}>
+    <StyledBadge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} variant={(userStatus && "dot") || "standard"}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar/>
+          <Avatar />
         </IconButton>
       </Tooltip>
 
