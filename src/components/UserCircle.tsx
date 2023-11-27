@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { IconButton, Tooltip, Avatar, Menu, MenuItem, Badge, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setStatus, setUser } from "../redux/slices/userSlice";
-import { RootState } from "../main";
+
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: "#44b700",
@@ -35,9 +35,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const UserCircle = () => {
   const navigate = useNavigate();
-  const userStatus = useSelector((state: RootState) => state.user.status);
-  const dispatch = useDispatch();
+  const status = localStorage.getItem("status");
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [userStatus, setUserStatus] = React.useState<string | null>(status);
+
+  useEffect(() => {
+    // Update userStatus when local storage status changes
+    setUserStatus(localStorage.getItem("status"));
+  }, [localStorage.getItem("status")]);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     if (userStatus) {
@@ -51,16 +57,13 @@ const UserCircle = () => {
 
   const handleCloseUserMenu1 = () => {
     navigate("/");
-    dispatch(setStatus(false));
-    dispatch(setUser("connect"));
-    dispatch(setUser("connect"));
     localStorage.setItem("user", "connect");
     localStorage.setItem("status", JSON.stringify(false));
     localStorage.setItem("token", "");
   };
 
   return (
-    <StyledBadge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} variant={(userStatus && "dot") || "standard"}>
+    <StyledBadge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} variant={(userStatus === "true" && "dot") || "standard"}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
           <Avatar />
