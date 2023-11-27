@@ -98,7 +98,6 @@ export function LatestOrders() {
       }
     }
   };
-
   return (
     <Box sx={{ margin: "20px" }}>
       <TextField
