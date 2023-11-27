@@ -12,7 +12,7 @@ interface TableRowProps {
 }
 
 const TableRowComponent: React.FC<TableRowProps> = ({ order, handleDeleteOrder, handleChangeStatus, statusMap }) => {
-  let colorBG = statusMap[order.status] || "#ff3c009b";
+  const colorBG = statusMap[order.status] || "#ff3c009b";
 
   return (
     <StyledTableRow key={order._id}>
