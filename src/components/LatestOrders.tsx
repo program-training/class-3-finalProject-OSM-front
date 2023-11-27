@@ -100,7 +100,6 @@ export function LatestOrders() {
   };
   return (
     <Box sx={{ margin: "20px" }}>
-      {/* Search Bar */}
       <TextField
         label="Search"
         variant="outlined"

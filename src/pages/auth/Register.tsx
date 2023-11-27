@@ -3,6 +3,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setStatus } from "../../redux/slices/userSlice";
+import { useState } from "react";
 
 interface FormData {
   name: string;
@@ -14,9 +17,7 @@ const validationSchema = Yup.object().shape({
   name: Yup.string()
     .required("Name is required")
     .matches(/[a-zA-Z].*[a-zA-Z]/, "Name must contain at least two letters"),
-  email: Yup.string()
-    .required("Email is required")
-    .email("Enter a valid email"),
+  email: Yup.string().required("Email is required").email("Enter a valid email"),
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
@@ -26,6 +27,8 @@ const validationSchema = Yup.object().shape({
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [error, seterror] = useState("");
   const {
     register,
     handleSubmit,
@@ -36,21 +39,26 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}users/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.status === 500) {
+        seterror("Username already exists. Please choose a different username.");
+        return;
+      }
 
       const jsonResponse = await response.json();
+
       if (jsonResponse.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
         localStorage.setItem("email", data.email);
+        localStorage.setItem("status", JSON.stringify(true));
+        dispatch(setStatus(true));
         navigate("/home");
       }
     } catch (error) {
@@ -87,58 +95,30 @@ const Register = () => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
-                <TextField
-                  {...register("name")}
-                  label="Name"
-                  error={!!errors.name}
-                  helperText={errors.name?.message && errors.name.message}
-                />
-
-                <TextField
-                  {...register("email")}
-                  label="Email"
-                  error={!!errors.email}
-                  helperText={errors.email?.message && errors.email.message}
-                />
-
-                <TextField
-                  {...register("password")}
-                  label="Password"
-                  type="password"
-                  error={!!errors.password}
-                  helperText={
-                    errors.password?.message && errors.password.message
-                  }
-                />
+                <TextField {...register("name")} label="Name" error={!!errors.name} helperText={errors.name?.message && errors.name.message} />
+                <Typography color="error" variant="body2">
+                  {error}
+                </Typography>
+                <TextField {...register("email")} label="Email" error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
+                <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
               </Stack>
 
-              <Button
-                fullWidth
-                size="large"
-                sx={{ mt: 3 }}
-                type="submit"
-                variant="contained"
-              >
+              <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                 Continue
               </Button>
             </form>
           </div>
         </Box>
-        {/* <div style={{width:"50vw",height:"1000px",textAlign: "center", background:" radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)"}}> */}
         <Box
           sx={{
             height: "100vh",
             px: 20,
             py: "10%",
             width: "50vw",
-            background:
-              " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
+            background: " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
           }}
         >
-          <img
-            src="https://material-kit-react.devias.io/assets/auth-illustration.svg"
-            alt=""
-          />
+          <img src="https://material-kit-react.devias.io/assets/auth-illustration.svg" alt="" />
         </Box>
       </Box>
     </>
