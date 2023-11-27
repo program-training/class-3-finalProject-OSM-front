@@ -1,6 +1,6 @@
 import { Box, Paper, TextField, Table, TableBody, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 import { StyledTableCell } from "../style/styles";
 import TableRowComponent from "./TableRowComponent"
@@ -65,25 +65,39 @@ export function LatestOrders() {
   };
 
   const handleChangeStatus = async (orderId: string) => {
+    const token = localStorage.getItem("token");
     try {
       await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
         status: "Delivered",
       });
 
       const response = await axios.get<OrderInterface[]>(
-        `${import.meta.env.VITE_BASE_URL}orders`
+        `${import.meta.env.VITE_BASE_URL}orders`,
+        {
+          headers: {
+            Authorization: token, // Include the authorization token here as well
+          },
+        }
       );
+  
       const updatedOrders: OrderInterface[] = response.data;
       setOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
-    } catch (error: any) {
-      console.error(
-        `Error changing status for order with ID ${orderId}:`,
-        error.response?.data || error.message
-      );
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        // Now error is narrowed down to AxiosError
+        console.error(
+          `Error changing status for order with ID ${orderId}:`,
+          (error as AxiosError).response?.data || error.message
+        );
+      } else {
+        console.error(
+          `Unknown error changing status for order with ID ${orderId}:`,
+          error
+        );
+      }
     }
   };
-
   return (
     <Box sx={{ margin: "20px" }}>
       <TextField
