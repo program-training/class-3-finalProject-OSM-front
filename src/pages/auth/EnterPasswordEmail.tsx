@@ -1,41 +1,42 @@
-import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as Yup from "yup";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 
-const validationEmail = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-});
-
 interface FormData {
-  email: string;
+  code: string;
 }
 
-const ForgotPassword: React.FC = () => {
+const validationSchema = Yup.object().shape({
+  code: Yup.string().required("Code is required"),
+});
+
+const EnterPasswordEmail = () => {
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(validationEmail),
+    resolver: yupResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const EmailVerification = localStorage.getItem("EmailVerification");
+    console.log(EmailVerification, data);
+
     try {
-      const response = await fetch(`http://localhost:8080/api/users/forgotpassword`, {
+      const response = await fetch(`http://localhost:8080/api/users/comparepassword`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: data.email }),
+        body: JSON.stringify({ email: EmailVerification, code: data.code }),
       });
-      const result = await response.text();
-      console.log(result);
-      localStorage.setItem("EmailVerification", data.email);
-      navigate("/enterPasswordEmail");
+      const result = await response.json();
+      console.log(result, "result");
+      navigate("/enterNewPassword");
     } catch (error) {
       console.error("Error sending POST request:", error);
     }
@@ -51,13 +52,13 @@ const ForgotPassword: React.FC = () => {
       }}
     >
       <Typography variant="h5" mb={3}>
-        Forgot Password
+        Enter Password From Email
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ display: "flex", flexDirection: "column", maxWidth: "300px" }}>
-          <TextField {...register("email")} label="Email" fullWidth error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
+          <TextField {...register("code")} label="Password" fullWidth error={!!errors.code} helperText={errors.code?.message && errors.code.message} />
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            Send Confirmation Email
+            Submit
           </Button>
         </Box>
       </form>
@@ -65,4 +66,4 @@ const ForgotPassword: React.FC = () => {
   );
 };
 
-export default ForgotPassword;
+export default EnterPasswordEmail;
