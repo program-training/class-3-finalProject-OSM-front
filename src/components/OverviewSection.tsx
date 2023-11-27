@@ -1,15 +1,14 @@
 // OverviewSection.tsx
-import React from "react";
 import { Grid, Container } from "@mui/material";
 import { OverviewTotalProfit } from "../components/OverviewTotalProfit";
 import { OverviewTotalCustomers } from "../components/OverviewTotalCustomers";
 import { useEffect, useState } from "react";
 import { OrderInterface } from "../interface/orderInterface";
 import axios from "axios";
-import { log } from "console";
+
 
 function OverviewSection() {
-  const [orders, setOrders] = useState<OrderInterface[]>([]);
+  //const [orders, setOrders] = useState<OrderInterface[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
@@ -21,7 +20,7 @@ function OverviewSection() {
           },
         });
         const ordersData: OrderInterface[] = response.data;
-        setOrders(ordersData);
+        //setOrders(ordersData);
         const calculatedTotalPrice = ordersData.reduce((total, order) => {
           return (
             total +
