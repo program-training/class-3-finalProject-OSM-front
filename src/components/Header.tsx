@@ -2,16 +2,17 @@ import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { RootState } from "../main";
-import { useNavigate } from "react-router-dom";
 import UserCircle from "./UserCircle";
 
 export default function Header() {
-  const navigate = useNavigate();
+
   const [statusUser, setStatusUser] = useState(false);
   const userStatus = useSelector((state: RootState) => state.user.status);
 
   useEffect(() => {
     setStatusUser(userStatus);
+    console.log(statusUser);
+    
   }, [userStatus]);
   return (
     <Box sx={{ flexGrow: 1, minHeight: "0px" }}>

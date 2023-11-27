@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { IconButton, Tooltip, Avatar, Menu, MenuItem, Badge, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setStatus, setUser } from "../redux/slices/userSlice";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
