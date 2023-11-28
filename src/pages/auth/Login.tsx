@@ -1,3 +1,9 @@
+import * as React from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -27,6 +33,7 @@ const validationSchema = Yup.object().shape({
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [open, setOpen] = React.useState(false);
   const [loginError, setLoginError] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -70,6 +77,19 @@ console.log(data);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/enterPasswordEmail");
+    setOpen(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -130,6 +150,22 @@ console.log(data);
                   }}
                 />
               </Stack>
+              <React.Fragment>
+                <Button variant="text" onClick={handleClickOpen}>
+                  Forgot Password?
+                </Button>
+                <Dialog open={open} onClose={handleClose}>
+                  <DialogTitle>Recover Password</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>To recover the password, please enter your email address here.We will send a temporary password.</DialogContentText>
+                    <TextField autoFocus margin="dense" id="name" label="Email Address" type="email" fullWidth variant="standard" />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleForgotPassword}>recover</Button>
+                  </DialogActions>
+                </Dialog>
+              </React.Fragment>
               <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                 Continue
               </Button>
