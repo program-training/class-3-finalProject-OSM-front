@@ -5,26 +5,13 @@ import { RootState } from "../main";
 import UserCircle from "./UserCircle";
 
 export default function Header() {
-
   const [statusUser, setStatusUser] = useState(false);
   const userStatus = useSelector((state: RootState) => state.user.status);
 
   useEffect(() => {
-<<<<<<< HEAD
-    const storedUser = localStorage.getItem("user");
-    const storedStatus = localStorage.getItem("status");
-
-    if (storedUser && storedStatus) {
-      dispatch(setUser(storedUser));
-    }
-  }, [dispatch]);
-
-=======
     setStatusUser(userStatus);
     console.log(statusUser);
-    
   }, [userStatus]);
->>>>>>> develop
   return (
     <Box sx={{ flexGrow: 1, minHeight: "0px" }}>
       <AppBar position="static" sx={{ background: "white" }}>
