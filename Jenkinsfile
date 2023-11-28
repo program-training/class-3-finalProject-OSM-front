@@ -9,17 +9,20 @@ pipeline {
         }
         stage('Build') {
             steps {
-                // Your build steps go here
+                // Add your build steps here
+                echo 'Building...'
             }
         }
         stage('Test') {
             steps {
-                // Your test steps go here
+                // Add your test steps here
+                echo 'Testing...'
             }
         }
         stage('Deploy') {
             steps {
-                // Your deployment steps go here
+                // Add your deployment steps here
+                echo 'Deploying...'
             }
         }
     }
