@@ -8,12 +8,13 @@ import Home from "./pages/Home";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import EnterPasswordEmail from "./pages/auth/EnterPasswordEmail";
 import EnterNewPassword from "./pages/auth/EnterNewPassword";
+import { CustomersTable } from "./components/CustomersTable";
 
 function App() {
   return (
     <>
       <CssBaseline />
-      <BrowserRouter>
+      <BrowserRouter basename="/osm">
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Login />} />

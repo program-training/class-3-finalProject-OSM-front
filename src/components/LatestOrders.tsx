@@ -1,12 +1,9 @@
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
 import { OrderInterface } from "../interface/orderInterface";
-import { DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
+import { DataGrid, GridRenderCellParams , GridCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { StyledTableCell } from "../style/styles";
-import TableRowComponent from "./TableRowComponent";
-import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../requestsToServer/requestToOrders";
-
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
   Delivered: "#74ff03a0",
@@ -79,10 +76,14 @@ export function LatestOrders() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
       try {
-        const orders = await requestGetOrders();
-        console.log("Fetched orders:", orders);
-        const ordersData: OrderInterface[] = orders;
+        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+        const ordersData: OrderInterface[] = response.data;
         setOrders(ordersData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -91,13 +92,39 @@ export function LatestOrders() {
     fetchData();
   }, []);
 
+  const handleRowClick = (params: GridCellParams) => {
+    console.log('Row Clicked:', params.row);
+  };
   const handleDeleteOrder = async (orderId: string) => {
     try {
-      await requestPutOrderStatus(orderId);
-      const updatedOrders = await requestGetOrders();
-      setOrders(updatedOrders);
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`);
+      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
     } catch (error) {
-      console.error(`Error changing status for order with ID ${orderId}:`, error);
+      console.error(`Error deleting order with ID ${orderId}:`, error);
+    }
+  };
+
+  const handleChangeStatus = async (orderId: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
+        status: "Delivered",
+      });
+
+      const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      const updatedOrders: OrderInterface[] = response.data;
+      setOrders(updatedOrders);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error(`Error changing status for order with ID ${orderId}:`, (error as AxiosError).response?.data || error.message);
+      } else {
+        console.error(`Unknown error changing status for order with ID ${orderId}:`, error);
+      }
     }
   };
 
@@ -121,9 +148,15 @@ export function LatestOrders() {
             backgroundColor: "#424242",
             color: "#fafafa",
           },
+          "& .MuiDataGrid-sortIcon": {
+            color: "#fafafa",
+          },
+          "& .MuiIconButton-root .MuiSvgIcon-root": {
+            color: "#fafafa", 
+          },
         }}
       >
-        <DataGrid getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
+        <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
       </Box>
     </Box>
   );
