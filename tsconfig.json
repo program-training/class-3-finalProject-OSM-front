@@ -20,6 +20,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "types": ["@types/node"],
-  "include": ["src", "src/tests/Login.test.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
