@@ -1,9 +1,10 @@
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 import { DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../requestsToServer/requestToOrders";
+
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
   Delivered: "#74ff03a0",
@@ -75,55 +76,24 @@ export function LatestOrders() {
   ];
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      try {
-        const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
-          headers: {
-            Authorization: token,
-          },
-        });
-        const ordersData: OrderInterface[] = response.data;
-        setOrders(ordersData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
+    const fetchData = async ()=>{
+     const data = await requestGetOrders()
+     setOrders(data);
+    }
+    fetchData()
   }, []);
 
   const handleDeleteOrder = async (orderId: string) => {
-    try {
-      await axios.delete(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`);
-      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
-    } catch (error) {
-      console.error(`Error deleting order with ID ${orderId}:`, error);
-    }
+        await requestDeleteOrder(orderId);
+        setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
   };
-
+  
   const handleChangeStatus = async (orderId: string) => {
-    const token = localStorage.getItem("token");
-    try {
-      await axios.put(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`, {
-        status: "Delivered",
-      });
-
-      const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
-        headers: {
-          Authorization: token, 
-        },
-      });
-
-      const updatedOrders: OrderInterface[] = response.data;
-      setOrders(updatedOrders);
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        console.error(`Error changing status for order with ID ${orderId}:`, (error as AxiosError).response?.data || error.message);
-      } else {
-        console.error(`Unknown error changing status for order with ID ${orderId}:`, error);
-      }
-    }
-  };
+        await requestPutOrderStatus(orderId);
+        const response = await requestGetOrders();
+        setOrders(response);
+    
+};
 
   const costumeOrders = orders
     ? orders.map((order: OrderInterface) => {
