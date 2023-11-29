@@ -20,7 +20,7 @@ pipeline {
         stage('Test Frontend') {
             steps {
                 script {
-                    echo 'Testing frontend...'
+                    echo 'Testing frontend....'
                     sh 'npm run test'
                 }
             }
