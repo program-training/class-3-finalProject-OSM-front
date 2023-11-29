@@ -1,37 +1,30 @@
-import * as React from "react";
+import { Fragment, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { setStatus, setUser } from "../../redux/slices/userSlice";
+import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setStatus, setUser } from "../../redux/slices/userSlice";
-
-interface FormData {
-  email: string;
-  password: string;
-}
-
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
-    .matches(/[0-9]/, "Password must contain at least one number"),
-});
+import { validationSchema, validationEmail, FetchRecover } from "../../logic/logicLogin";
+import { FormData } from "../../interface/loginInterface";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [titleDialog, setTitleDialog] = useState("Recover Password");
+  const [messageDialog, setMessageDialogDialog] = useState("To recover the password, please enter your email address here.We will send a temporary password.");
+  const [inputDialog, setInputDialog] = useState("Email");
+  const [emailInput, setEmailInput] = useState<string>("");
+  const [buttonDialog, setButtonDialogDialog] = useState("recover");
+  const [typeDialog, setTypeDialog] = useState("email");
   const [loginError, setLoginError] = useState<string>("");
+
   const {
     register,
     handleSubmit,
@@ -68,16 +61,23 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    navigate("/enterPasswordEmail");
-    setOpen(false);
+  const handleRecoverPassword = () => {
+    if (buttonDialog === "recover" && validationEmail.isValidSync({ emailInput })) {
+      setTitleDialog("Enter Password");
+      setMessageDialogDialog("We sent you a temporary password to your email, enter it here");
+      setInputDialog("Enter Password");
+      setButtonDialogDialog("send");
+      setTypeDialog("code");
+      FetchRecover({ emailInput });
+      console.log("AAA");
+    } else console.log("BBB", emailInput);
   };
 
-  const handleClickOpen = () => {
+  const handleClickOpenForgotPassword = () => {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleCloseForgotPassword = () => {
     setOpen(false);
   };
 
@@ -114,22 +114,35 @@ const Login = () => {
 
                 <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
               </Stack>
-              <React.Fragment>
-                <Button variant="text" onClick={handleClickOpen}>
+              <Fragment>
+                <Button variant="text" onClick={handleClickOpenForgotPassword}>
                   Forgot Password?
                 </Button>
-                <Dialog open={open} onClose={handleClose}>
-                  <DialogTitle>Recover Password</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>To recover the password, please enter your email address here.We will send a temporary password.</DialogContentText>
-                    <TextField autoFocus margin="dense" id="name" label="Email Address" type="email" fullWidth variant="standard" />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleForgotPassword}>recover</Button>
-                  </DialogActions>
+                <Dialog open={open} onClose={handleCloseForgotPassword}>
+                  <form>
+                    <DialogTitle>{titleDialog}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>{messageDialog}</DialogContentText>
+
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label={inputDialog}
+                        type={typeDialog}
+                        fullWidth
+                        variant="standard"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                      />
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleCloseForgotPassword}>Cancel</Button>
+                      <Button onClick={handleRecoverPassword}>{buttonDialog}</Button>
+                    </DialogActions>
+                  </form>
                 </Dialog>
-              </React.Fragment>
+              </Fragment>
               <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                 Continue
               </Button>
