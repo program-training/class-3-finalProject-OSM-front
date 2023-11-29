@@ -12,7 +12,7 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route path="/osm" element={<Layout />}>
+          <Route path="/osm"  element={<Layout />}>
             <Route path="/osm" element={<Login />} />
             <Route path="/osm/home" element={<Home />} />
             <Route path="/osm/register" element={<Register />} />

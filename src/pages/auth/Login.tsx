@@ -51,7 +51,7 @@ const Login = () => {
         localStorage.setItem("status", JSON.stringify(true));
         dispatch(setStatus(true));
         dispatch(setUser(data.email));
-        navigate("/home");
+        navigate("/osm/home");
       } else {
         setLoginError(json.message || "Login failed");
       }
@@ -83,7 +83,7 @@ const Login = () => {
               <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
                 Don't have an account?
-                <Link href="/register">Register</Link>
+                <Link href="/osm/register">Register</Link>
               </Typography>
             </Stack>
 
