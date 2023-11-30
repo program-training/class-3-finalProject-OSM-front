@@ -59,7 +59,7 @@ const FetchResetPassword: SubmitHandler<ForgotPasswordData> = async (data) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: EmailVerification, code: data.valueInput }),
+      body: JSON.stringify({ email: EmailVerification, password: data.valueInput }),
     });
     console.log("BodyFetch3", JSON.stringify({ email: EmailVerification, password: data.valueInput }));
     const result = await response.text();
