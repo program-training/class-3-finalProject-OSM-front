@@ -1,6 +1,5 @@
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 import { DataGrid, GridCellParams, GridRenderCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
