@@ -6,13 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setStatus } from "../../redux/slices/userSlice";
 import { useState } from "react";
-
 interface FormData {
   name: string;
   email: string;
   password: string;
 }
-
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .required("Name is required")
@@ -24,7 +22,6 @@ const validationSchema = Yup.object().shape({
     .matches(/[a-zA-Z]/, "Password must contain at least one letter")
     .matches(/[0-9]/, "Password must contain at least one number"),
 });
-
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,7 +33,6 @@ const Register = () => {
   } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
   });
-
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/register`, {
@@ -46,14 +42,11 @@ const Register = () => {
         },
         body: JSON.stringify(data),
       });
-
       if (response.status === 500) {
         seterror("Username already exists. Please choose a different username.");
         return;
       }
-
       const jsonResponse = await response.json();
-
       if (jsonResponse.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
         localStorage.setItem("email", data.email);
@@ -65,7 +58,6 @@ const Register = () => {
       console.error("Error during registration:", error);
     }
   };
-
   return (
     <>
       <Box
@@ -92,7 +84,6 @@ const Register = () => {
                 <Link href="/oms">Log In</Link>
               </Typography>
             </Stack>
-
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
                 <TextField {...register("name")} label="Name" error={!!errors.name} helperText={errors.name?.message && errors.name.message} />
@@ -102,7 +93,6 @@ const Register = () => {
                 <TextField {...register("email")} label="Email" error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
                 <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
               </Stack>
-
               <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                 Continue
               </Button>
@@ -124,5 +114,4 @@ const Register = () => {
     </>
   );
 };
-
 export default Register;
