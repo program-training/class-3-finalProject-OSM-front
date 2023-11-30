@@ -14,9 +14,9 @@ export default function Header() {
   }, [userStatus]);
   return (
     <Box sx={{ flexGrow: 1, minHeight: "0px" }}>
-      <AppBar position="static" sx={{ background: "white" }}>
+      <AppBar position="fixed" sx={{ backgroundColor: "#424242a0" }}>
         <Toolbar sx={{ background: "" }}>
-          <Typography color="primary" variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography  variant="h6" component="div" sx={{ flexGrow: 1 ,color:"white" }}>
             Order Management
           </Typography>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>

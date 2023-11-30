@@ -12,6 +12,9 @@ import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setStatus, setUser } from "../../redux/slices/userSlice";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
 
 interface FormData {
   email: string;
@@ -32,6 +35,8 @@ const Login = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
   const [loginError, setLoginError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -39,6 +44,11 @@ const Login = () => {
   } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
   });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
@@ -49,6 +59,7 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
+console.log(data);
 
       const json = await response.json();
 
@@ -64,7 +75,7 @@ const Login = () => {
         setLoginError(json.message || "Login failed");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -110,9 +121,34 @@ const Login = () => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={5}>
-                <TextField {...register("email")} label="Email" error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
+                <TextField
+                  {...register("email")}
+                  label="Email"
+                  error={!!errors.email}
+                  helperText={errors.email?.message && errors.email.message}
+                />
 
-                <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
+                <TextField
+                sx={{background:"#e3f2fd"}}
+                  {...register("password")}
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  error={!!errors.password}
+                  helperText={errors.password?.message && errors.password.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment  position="end">
+                        <Button
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               </Stack>
               <React.Fragment>
                 <Button variant="text" onClick={handleClickOpen}>
