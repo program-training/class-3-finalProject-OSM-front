@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <CssBaseline />
-      <BrowserRouter>
+      <BrowserRouter basename="/oms">
         <Routes>
           <Route element={<Layout />}>
             <Route path="/osm" element={<Login />} />
