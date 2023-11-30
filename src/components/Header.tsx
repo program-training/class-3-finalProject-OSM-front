@@ -5,12 +5,12 @@ import { RootState } from "../main";
 import UserCircle from "./UserCircle";
 
 export default function Header() {
-  const [statusUser, setStatusUser] = useState(false);
+  const [, setStatusUser] = useState(false);
   const userStatus = useSelector((state: RootState) => state.user.status);
 
   useEffect(() => {
     setStatusUser(userStatus);
-    console.log(statusUser);
+    
   }, [userStatus]);
   return (
     <Box sx={{ flexGrow: 1, minHeight: "0px" }}>

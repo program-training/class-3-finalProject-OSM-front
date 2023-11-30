@@ -1,26 +1,50 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, Box, Button, Typography } from "@mui/material";
 import { DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface UserInterface {
+
   id: number;
   email: string;
   password: string;
   isadmin: boolean;
   code: " ";
 }
-
+const showToastMessage = () => {
+  toast.success("The deletion was successful !", {
+    position: toast.POSITION.TOP_LEFT,
+  });
+}
 export const CustomersTable = () => {
 
   const [users, setUsers] = useState<UserInterface[]>([]);
-  const [count, setCount] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 1 },
-    { field: "email", headerName: "Email", flex: 0.5 },
-    { field: "isadmin", headerName: "Permissions", flex: 1 },
+    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "email", headerName: "Email", flex: 1 },
+    {
+      field: "isadmin",
+      headerName: "Permissions",
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            color: params.value ? "green" : "yellow",
+          }}
+        >
+          {params.value ? "Admin" : "User"}
+        </Typography>
+      ),
+    },
     {
       field: "delete",
       headerName: "Delete user",
@@ -35,30 +59,24 @@ export const CustomersTable = () => {
       field: "changeStatus",
       headerName: "Change Status",
       width: 200,
-      renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleChangeStatus(params.id.toString())}>Change Status</Button>
-      ),
+      renderCell: (params: GridRenderCellParams) => <Button onClick={() => handleChangeStatus(params.id.toString())}>Change Status</Button>,
     },
   ];
-
+  
 
   const handleDeleteUser = async (userId: number) => {
-    console.log(users);
     try {
       await axios.delete(`${import.meta.env.VITE_BASE_URL}users/${userId}`);
-      setCount(count + 1 )
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
       console.log(`Successfully deleted user with ID ${userId}`);
-      // Optionally, you can add a notification or other user feedback here
+      showToastMessage()
     } catch (error) {
       console.error(`Error deleting user with ID ${userId}:`, error);
-      // Optionally, you can add a notification or other user feedback here
     }
   };
 
   const handleChangeStatus = (userId: string) => {
-
     console.log(`Change status for user with ID ${userId}`);
-
   };
 
   useEffect(() => {
@@ -70,37 +88,41 @@ export const CustomersTable = () => {
         });
         const usersData: UserInterface[] = response.data;
         setUsers(usersData);
-        console.log(usersData);
+        setLoading(false); // Set loading to false when data is fetched
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false); // Make sure to set loading to false in case of an error
       }
     };
     fetchData();
-  }, [count]);
+  }, []);
 
   return (
-    <Box sx={{ margin: "10%" , display:"flex" ,justifyContent:" center" }}>
-    <Box sx={{ margin: "10%" , display:"flex" ,justifyContent:" center" }}>
-      <Typography variant="h1" component="h2">Customers</Typography>
-      <Box
-        sx={{
-          width: "50vw",
-          height: "80vh",
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "#424242",
-            color: "#fafafa",
-          },
-          "& .MuiDataGrid-sortIcon": {
-            color: "#fafafa",
-          },
-          "& .MuiIconButton-root .MuiSvgIcon-root": {
-            color: "#fafafa",
-          },
-        }}
-      >
-        <DataGrid getRowId={(row: { id: number }) => row.id} rows={users} columns={columns} />
+    <Box sx={{ margin: "10%", textAlign: "center" }}>
+      <Typography variant="h3" sx={{ padding: "2%" }}>
+        Customers
+      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            width: "80vw",
+            height: "80vh",
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#424242",
+              color: "#fafafa",
+            },
+            "& .MuiDataGrid-sortIcon": {
+              color: "#fafafa",
+            },
+            "& .MuiIconButton-root .MuiSvgIcon-root": {
+              color: "#fafafa",
+            },
+          }}
+        >
+          <DataGrid loading={loading} getRowId={(row: { id: number }) => row.id} rows={users} columns={columns} />
+        </Box>
       </Box>
-    </Box>
+      <ToastContainer />
     </Box>
   );
 };

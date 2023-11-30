@@ -4,12 +4,20 @@ import { OrderInterface } from "../interface/orderInterface";
 import { DataGrid, GridCellParams, GridRenderCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../requestsToServer/requestToOrders";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
   Delivered: "#74ff03a0",
   Refunded: "#ff00009e",
 };
+
+const showToastMessage = () => {
+  toast.success("The deletion was successful !", {
+    position: toast.POSITION.TOP_LEFT,
+  });
+}
 
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
@@ -90,11 +98,13 @@ export function LatestOrders() {
   const handleDeleteOrder = async (orderId: string) => {
     await requestDeleteOrder(orderId);
     setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+    showToastMessage()
   };
 
   const handleChangeStatus = async (orderId: string) => {
     await requestPutOrderStatus(orderId);
     const response = await requestGetOrders();
+    showToastMessage()
     setOrders(response);
   };
 
@@ -128,6 +138,7 @@ export function LatestOrders() {
       >
         <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
       </Box>
+      <ToastContainer />
     </Box>
   );
 }

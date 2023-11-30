@@ -26,7 +26,6 @@ function OverviewSection() {
             }, 0)
           );
         }, 0);
-        console.log(calculatedTotalPrice);
         setTotalPrice(calculatedTotalPrice);
       } catch (error) {
         console.error("Error fetching data:", error);

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Link, Stack, TextField, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setStatus, setUser } from "../../redux/slices/userSlice";
@@ -59,11 +59,9 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
-console.log(data);
 
       const json = await response.json();
 
-      console.log(json);
       if (json.accessToken) {
         localStorage.setItem("token", json.accessToken);
         localStorage.setItem("user", data.email || "");
@@ -93,99 +91,90 @@ console.log(data);
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          flex: "1 1 auto",
-          alignItems: "center",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+    <Grid container sx={{marginTop:"4em"}}>
+      <Grid item xs={12} md={6}>
         <Box
           sx={{
-            maxWidth: "50vw",
-            px: 30,
-            py: "1%",
-            width: "100%",
+            px: 10,
+            py: "15%",
+            width: "90%",
           }}
         >
-          <div>
-            <Stack spacing={5} sx={{ mb: 3 }}>
-              <Typography variant="h3">Login</Typography>
-              <Typography color="text.secondary" variant="body2">
-                Don't have an account?
-                <Link href="/oms/register">Register</Link>
-              </Typography>
+          <Stack spacing={5} sx={{ mb: 3 }}>
+            <Typography variant="h3">Login</Typography>
+            <Typography color="text.secondary" variant="body2">
+              Don't have an account?
+              <Link href="/oms/register">Register</Link>
+            </Typography>
+          </Stack>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={5}>
+              <TextField
+                {...register("email")}
+                label="Email"
+                error={!!errors.email}
+                helperText={errors.email?.message && errors.email.message}
+              />
+
+              <TextField
+                sx={{ background: "#e3f2fd" }}
+                {...register("password")}
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                error={!!errors.password}
+                helperText={errors.password?.message && errors.password.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Button
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </Button>
+                    </InputAdornment>
+                  ),
+                }}
+              />
             </Stack>
-
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={5}>
-                <TextField
-                  {...register("email")}
-                  label="Email"
-                  error={!!errors.email}
-                  helperText={errors.email?.message && errors.email.message}
-                />
-
-                <TextField
-                sx={{background:"#e3f2fd"}}
-                  {...register("password")}
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  error={!!errors.password}
-                  helperText={errors.password?.message && errors.password.message}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment  position="end">
-                        <Button
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </Button>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Stack>
-              <React.Fragment>
-                <Button variant="text" onClick={handleClickOpen}>
-                  Forgot Password?
-                </Button>
-                <Dialog open={open} onClose={handleClose}>
-                  <DialogTitle>Recover Password</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>To recover the password, please enter your email address here.We will send a temporary password.</DialogContentText>
-                    <TextField autoFocus margin="dense" id="name" label="Email Address" type="email" fullWidth variant="standard" />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleForgotPassword}>recover</Button>
-                  </DialogActions>
-                </Dialog>
-              </React.Fragment>
-              <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
-                Continue
+            <React.Fragment>
+              <Button variant="text" onClick={handleClickOpen}>
+                Forgot Password?
               </Button>
-            </form>
-            <p>{loginError}</p>
-          </div>
+              <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Recover Password</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>To recover the password, please enter your email address here.We will send a temporary password.</DialogContentText>
+                  <TextField autoFocus margin="dense" id="name" label="Email Address" type="email" fullWidth variant="standard" />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose}>Cancel</Button>
+                  <Button onClick={handleForgotPassword}>recover</Button>
+                </DialogActions>
+              </Dialog>
+            </React.Fragment>
+            <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
+              Continue
+            </Button>
+          </form>
+          <p>{loginError}</p>
         </Box>
+      </Grid>
+      <Grid item xs={12} md={6}>
         <Box
           sx={{
-            height: "100vh",
-            px: 20,
+            px: 2,
             py: "10%",
-            width: "50vw",
+            margin: "auto",
             background: " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
           }}
         >
-          <img src="https://material-kit-react.devias.io/assets/auth-illustration.svg" alt="" />
+          <img src="https://material-kit-react.devias.io/assets/auth-illustration.svg" alt="" style={{ width: "100%", height: "auto" }} />
         </Box>
-      </Box>
-    </>
+      </Grid>
+    </Grid>
   );
 };
 
