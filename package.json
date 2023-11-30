@@ -18,6 +18,7 @@
     "@mui/joy": "^5.0.0-beta.15",
     "@mui/material": "^5.14.17",
     "@mui/styled-engine-sc": "^6.0.0-alpha.5",
+    "@mui/x-data-grid": "^6.18.2",
     "@mui/x-data-grid-generator": "^6.18.2",
     "@reduxjs/toolkit": "^1.9.7",
     "@tabler/icons": "^2.40.0",
@@ -44,6 +45,7 @@
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "jsdom": "^23.0.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   }
