@@ -13,9 +13,9 @@ function App() {
       <BrowserRouter basename="/oms">
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/osm" element={<Login />} />
-            <Route path="/osm/home" element={<Home />} />
-            <Route path="/osm/register" element={<Register />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/register" element={<Register />} />
           </Route>
         </Routes>
       </BrowserRouter>

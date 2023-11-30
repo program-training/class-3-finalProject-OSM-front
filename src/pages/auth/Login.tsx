@@ -70,7 +70,7 @@ console.log(data);
         localStorage.setItem("status", JSON.stringify(true));
         dispatch(setStatus(true));
         dispatch(setUser(data.email));
-        navigate("/osm/home");
+        navigate("/home");
       } else {
         setLoginError(json.message || "Login failed");
       }
