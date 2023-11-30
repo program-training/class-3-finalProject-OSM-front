@@ -1,29 +1,34 @@
-import { useState } from "react";
+import React from "react";
+import { Fragment, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import {useDispatch } from "react-redux";
-import { setStatus ,setUser } from "../../redux/slices/userSlice";
-interface FormData {
-  email: string;
-  password: string;
-}
-
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
-    .matches(/[0-9]/, "Password must contain at least one number"),
-});
+import { Box, Button, InputAdornment, Link, Stack, TextField, Typography } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { setStatus, setUser } from "../../redux/slices/userSlice";
+import { validationSchema, validationEmail, FetchRecover, FetchComparePassword, FetchResetPassword } from "../../logic/logicLogin";
+import { FormData } from "../../interface/loginInterface";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [titleDialog, setTitleDialog] = useState("Recover Password");
+  const [messageDialog, setMessageDialogDialog] = useState("To recover the password, please enter your email address here.We will send a temporary password.");
+  const [inputDialog, setInputDialog] = useState("Email");
+  const [valueInput, setValueInput] = useState<string>("");
+  const [buttonDialog, setButtonDialogDialog] = useState("recover");
+  const [typeDialog, setTypeDialog] = useState("email");
   const [loginError, setLoginError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -31,6 +36,11 @@ const Login = () => {
   } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
   });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
@@ -41,6 +51,7 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
+      console.log(data);
 
       const json = await response.json();
 
@@ -51,13 +62,46 @@ const Login = () => {
         localStorage.setItem("status", JSON.stringify(true));
         dispatch(setStatus(true));
         dispatch(setUser(data.email));
-        navigate("/osm/home");
+        navigate("/home");
       } else {
         setLoginError(json.message || "Login failed");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
+  };
+
+  const handleRecoverPassword = () => {
+    if (buttonDialog === "recover" && validationEmail.isValidSync({ email: valueInput })) {
+      FetchRecover({ valueInput });
+      setTitleDialog("Enter Password");
+      setMessageDialogDialog("We sent you a temporary password to your email, enter it here");
+      setInputDialog("Enter Password");
+      setButtonDialogDialog("send");
+      setTypeDialog("code");
+      setValueInput("");
+    } else if (buttonDialog === "send") {
+      FetchComparePassword({ valueInput });
+      setTitleDialog("Choose new password");
+      setMessageDialogDialog("Choose a new permanent password. The password will be used by you to enter the website");
+      setInputDialog("Enter New Password");
+      setButtonDialogDialog("choose");
+      setTypeDialog("code");
+      setValueInput("");
+    } else if (buttonDialog === "choose") {
+      FetchResetPassword({ valueInput });
+      setOpen(false);
+    } else {
+      console.log("Email not validated", valueInput);
+    }
+  };
+
+  const handleClickOpenForgotPassword = () => {
+    setOpen(true);
+  };
+
+  const handleCloseForgotPassword = () => {
+    setOpen(false);
   };
 
   return (
@@ -83,7 +127,7 @@ const Login = () => {
               <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
                 Don't have an account?
-                <Link href="/osm/register">Register</Link>
+                <Link href="/oms/register">Register</Link>
               </Typography>
             </Stack>
 
@@ -91,8 +135,51 @@ const Login = () => {
               <Stack spacing={5}>
                 <TextField {...register("email")} label="Email" error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
 
-                <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
+                <TextField
+                  sx={{ background: "#e3f2fd" }}
+                  {...register("password")}
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  error={!!errors.password}
+                  helperText={errors.password?.message && errors.password.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Button aria-label="toggle password visibility" onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               </Stack>
+              <Fragment>
+                <Button variant="text" onClick={handleClickOpenForgotPassword}>
+                  Forgot Password?
+                </Button>
+                <Dialog open={open} onClose={handleCloseForgotPassword}>
+                  <DialogTitle>{titleDialog}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>{messageDialog}</DialogContentText>
+
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="name"
+                      label={inputDialog}
+                      type={typeDialog}
+                      fullWidth
+                      variant="standard"
+                      value={valueInput}
+                      onChange={(e) => setValueInput(e.target.value)}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseForgotPassword}>Cancel</Button>
+                    <Button onClick={handleRecoverPassword}>{buttonDialog}</Button>
+                  </DialogActions>
+                </Dialog>
+              </Fragment>
               <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                 Continue
               </Button>

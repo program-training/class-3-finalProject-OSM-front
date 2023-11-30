@@ -7,15 +7,7 @@ interface SearchBarProps {
 }
 
 const SearchBarComponent: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm }) => {
-  return (
-    <TextField
-      label="Search"
-      variant="outlined"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      sx={{ marginBottom: 2 }}
-    />
-  );
+  return <TextField label="Search" variant="outlined" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ marginBottom: 2 }} />;
 };
 
 export default SearchBarComponent;

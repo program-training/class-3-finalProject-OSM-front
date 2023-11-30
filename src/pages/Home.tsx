@@ -4,7 +4,7 @@ function Home() {
   return (
     <div>
       <div>
-      <OverviewSection />
+        <OverviewSection />
       </div>
       <LatestOrders />
     </div>
