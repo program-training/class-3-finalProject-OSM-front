@@ -51,7 +51,7 @@ const Register = () => {
       if (jsonResponse.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
         localStorage.setItem("email", data.email);
-        navigate("/osm/home");
+        navigate("/home");
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -81,7 +81,7 @@ const Register = () => {
               <Typography variant="h3">Register</Typography>
               <Typography color="text.secondary" variant="body2">
                 Already have an account?
-                <Link href="/osm">Log In</Link>
+                <Link href="/oms">Log In</Link>
               </Typography>
             </Stack>
 
