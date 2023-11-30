@@ -89,7 +89,7 @@ const Register = () => {
               <Typography variant="h3">Register</Typography>
               <Typography color="text.secondary" variant="body2">
                 Already have an account?
-                <Link href="/">Log In</Link>
+                <Link href="/oms">Log In</Link>
               </Typography>
             </Stack>
 
