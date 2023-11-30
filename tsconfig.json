@@ -19,6 +19,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "types": ["@types/node"],
+  // "types": ["@types/node"],
+  "types": ["vitest/globals"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
