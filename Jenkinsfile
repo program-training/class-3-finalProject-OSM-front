@@ -7,22 +7,38 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build') {
+
+        stage('Install Dependencies') {
             steps {
-                // Add your build steps here
-                echo 'Building...'
+                script {
+                    echo 'Installing dependencies...'
+                    sh 'npm install'
+                }
             }
         }
-        stage('Test') {
+
+        stage('Test Frontend') {
             steps {
-                // Add your test steps here
-                echo 'Testing...'
+                script {
+                    echo 'Testing frontend....'
+                    sh 'npm run test'
+                }
             }
         }
+
+        stage('Build Frontend') {
+            steps {
+                script {
+                    echo 'Building frontend...'
+                    sh 'npm run build'
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
-                // Add your deployment steps here
                 echo 'Deploying...'
+                // Add your deployment steps here
             }
         }
     }
