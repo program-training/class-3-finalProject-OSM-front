@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import { DataGrid, GridRenderCellParams , GridCellParams } from "@mui/x-data-grid";
+import { DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import DeleteIcon from "@mui/icons-material/Delete";
