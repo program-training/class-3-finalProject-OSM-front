@@ -22,3 +22,4 @@ test('contains the word "Login"', async () => {
   const componentText = loginHeading ? loginHeading.textContent?.toLowerCase() : '';
   expect(componentText).toContain('login');
 });
+
