@@ -37,14 +37,14 @@ function OverviewSection() {
 
   return (
     <Container maxWidth="xl">
-      <Grid sx={{ margin: "20px" }} container spacing={10}>
-        <Grid xs={12} sm={6} lg={3}>
+      <Grid item sx={{ margin: "20px" }} container spacing={10}>
+        <Grid item xs={12} sm={6} lg={3}>
           <OverviewTotalProfit
             sx={{ height: "100%" }}
             value={"$" + String(totalPrice)}
           />
         </Grid>
-        <Grid xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <OverviewTotalCustomers
             difference={16}
             positive={false}
