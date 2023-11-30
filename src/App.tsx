@@ -5,6 +5,7 @@ import { CssBaseline } from "@mui/material";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import Home from "./pages/Home";
+import { CustomersTable } from "./components/CustomersTable";
 
 function App() {
   return (

@@ -118,10 +118,10 @@ export function LatestOrders() {
             backgroundColor: "#424242",
             color: "#fafafa",
           },
-          "& .MuiDataGrid-sortIcon": {
+          "& .MuiDataGrid-columnHeaders .MuiDataGrid-sortIcon": {
             color: "#fafafa",
           },
-          "& .MuiIconButton-root .MuiSvgIcon-root": {
+          "& .MuiDataGrid-columnHeaders .MuiIconButton-root .MuiSvgIcon-root": {
             color: "#fafafa", 
           },
         }}
