@@ -10,7 +10,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { validationSchema, validationEmail, FetchRecover } from "../../logic/logicLogin";
+import { validationSchema, validationEmail, FetchRecover, FetchComparePassword, FetchResetPassword } from "../../logic/logicLogin";
 import { FormData } from "../../interface/loginInterface";
 
 const Login = () => {
@@ -20,7 +20,7 @@ const Login = () => {
   const [titleDialog, setTitleDialog] = useState("Recover Password");
   const [messageDialog, setMessageDialogDialog] = useState("To recover the password, please enter your email address here.We will send a temporary password.");
   const [inputDialog, setInputDialog] = useState("Email");
-  const [emailInput, setEmailInput] = useState<string>("");
+  const [valueInput, setValueInput] = useState<string>("");
   const [buttonDialog, setButtonDialogDialog] = useState("recover");
   const [typeDialog, setTypeDialog] = useState("email");
   const [loginError, setLoginError] = useState<string>("");
@@ -62,15 +62,28 @@ const Login = () => {
   };
 
   const handleRecoverPassword = () => {
-    if (buttonDialog === "recover" && validationEmail.isValidSync({ emailInput })) {
+    if (buttonDialog === "recover" && validationEmail.isValidSync({ email: valueInput })) {
+      FetchRecover({ valueInput });
       setTitleDialog("Enter Password");
       setMessageDialogDialog("We sent you a temporary password to your email, enter it here");
       setInputDialog("Enter Password");
       setButtonDialogDialog("send");
       setTypeDialog("code");
-      FetchRecover({ emailInput });
-      console.log("AAA");
-    } else console.log("BBB", emailInput);
+      setValueInput("");
+    } else if (buttonDialog === "send") {
+      FetchComparePassword({ valueInput });
+      setTitleDialog("Choose new password");
+      setMessageDialogDialog("Choose a new permanent password. The password will be used by you to enter the website");
+      setInputDialog("Enter New Password");
+      setButtonDialogDialog("choose");
+      setTypeDialog("code");
+      setValueInput("");
+    } else if (buttonDialog === "choose") {
+      FetchResetPassword({ valueInput });
+      setOpen(false);
+    } else {
+      console.log("Email not validated", valueInput);
+    }
   };
 
   const handleClickOpenForgotPassword = () => {
@@ -104,7 +117,7 @@ const Login = () => {
               <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
                 Don't have an account?
-                <Link href="/register">Register</Link>
+                <Link href="/oms/register">Register</Link>
               </Typography>
             </Stack>
 
@@ -119,28 +132,26 @@ const Login = () => {
                   Forgot Password?
                 </Button>
                 <Dialog open={open} onClose={handleCloseForgotPassword}>
-                  <form>
-                    <DialogTitle>{titleDialog}</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText>{messageDialog}</DialogContentText>
+                  <DialogTitle>{titleDialog}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>{messageDialog}</DialogContentText>
 
-                      <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label={inputDialog}
-                        type={typeDialog}
-                        fullWidth
-                        variant="standard"
-                        value={emailInput}
-                        onChange={(e) => setEmailInput(e.target.value)}
-                      />
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleCloseForgotPassword}>Cancel</Button>
-                      <Button onClick={handleRecoverPassword}>{buttonDialog}</Button>
-                    </DialogActions>
-                  </form>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="name"
+                      label={inputDialog}
+                      type={typeDialog}
+                      fullWidth
+                      variant="standard"
+                      value={valueInput}
+                      onChange={(e) => setValueInput(e.target.value)}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseForgotPassword}>Cancel</Button>
+                    <Button onClick={handleRecoverPassword}>{buttonDialog}</Button>
+                  </DialogActions>
                 </Dialog>
               </Fragment>
               <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">

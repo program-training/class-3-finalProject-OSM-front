@@ -3,6 +3,6 @@ export interface FormData {
   password: string;
 }
 
-export interface EmailData {
-  emailInput: string;
+export interface ForgotPasswordData {
+  valueInput: string;
 }
