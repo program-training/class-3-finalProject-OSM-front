@@ -104,7 +104,7 @@ const Login = () => {
               <Typography variant="h3">Login</Typography>
               <Typography color="text.secondary" variant="body2">
                 Don't have an account?
-                <Link href="/register">Register</Link>
+                <Link href="/oms/register">Register</Link>
               </Typography>
             </Stack>
 
