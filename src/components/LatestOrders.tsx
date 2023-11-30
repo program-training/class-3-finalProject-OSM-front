@@ -87,17 +87,17 @@ export function LatestOrders() {
   const handleRowClick = (params: GridCellParams) => {
     console.log('Row Clicked:', params.row);
   };
-  const handleDeleteOrder = async (orderId: string) => {
-        await requestDeleteOrder(orderId);
-        setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
-  };
   
+  const handleDeleteOrder = async (orderId: string) => {
+    await requestDeleteOrder(orderId);
+    setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+  };
+
   const handleChangeStatus = async (orderId: string) => {
-        await requestPutOrderStatus(orderId);
-        const response = await requestGetOrders();
-        setOrders(response);
-    
-};
+    await requestPutOrderStatus(orderId);
+    const response = await requestGetOrders();
+    setOrders(response);
+  };
 
   const costumeOrders = orders
     ? orders.map((order: OrderInterface) => {
@@ -113,16 +113,21 @@ export function LatestOrders() {
     : [];
   return (
     <Box sx={{ margin: "20px" }}>
-     
-      <Box sx={{
-    "& .MuiDataGrid-columnHeaders": {
-      backgroundColor: "#424242",
-      color:"#fafafa" , 
-    }
-  }}>
-        <DataGrid
-         getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns}
-          />
+      <Box
+        sx={{
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "#424242",
+            color: "#fafafa",
+          },
+          "& .MuiDataGrid-sortIcon": {
+            color: "#fafafa",
+          },
+          "& .MuiIconButton-root .MuiSvgIcon-root": {
+            color: "#fafafa", 
+          },
+        }}
+      >
+        <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
       </Box>
     </Box>
   );
