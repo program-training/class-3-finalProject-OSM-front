@@ -1,3 +1,4 @@
+import React from "react";
 import { LatestOrders } from "../components/LatestOrders";
 import OverviewSection from "../components/OverviewSection";
 function Home() {

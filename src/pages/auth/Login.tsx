@@ -1,15 +1,18 @@
+import React from "react";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { setStatus, setUser } from "../../redux/slices/userSlice";
-import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, InputAdornment, Link, Stack, TextField, Typography } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { setStatus, setUser } from "../../redux/slices/userSlice";
 import { validationSchema, validationEmail, FetchRecover, FetchComparePassword, FetchResetPassword } from "../../logic/logicLogin";
 import { FormData } from "../../interface/loginInterface";
 
@@ -24,6 +27,7 @@ const Login = () => {
   const [buttonDialog, setButtonDialogDialog] = useState("recover");
   const [typeDialog, setTypeDialog] = useState("email");
   const [loginError, setLoginError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const {
     register,
@@ -32,6 +36,11 @@ const Login = () => {
   } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
   });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
@@ -42,6 +51,7 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
+      console.log(data);
 
       const json = await response.json();
 
@@ -57,7 +67,7 @@ const Login = () => {
         setLoginError(json.message || "Login failed");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -125,7 +135,23 @@ const Login = () => {
               <Stack spacing={5}>
                 <TextField {...register("email")} label="Email" error={!!errors.email} helperText={errors.email?.message && errors.email.message} />
 
-                <TextField {...register("password")} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message && errors.password.message} />
+                <TextField
+                  sx={{ background: "#e3f2fd" }}
+                  {...register("password")}
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  error={!!errors.password}
+                  helperText={errors.password?.message && errors.password.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Button aria-label="toggle password visibility" onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               </Stack>
               <Fragment>
                 <Button variant="text" onClick={handleClickOpenForgotPassword}>

@@ -17,7 +17,7 @@ const validationEmail = Yup.object().shape({
 
 const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
   try {
-    const response = await fetch(`https://osm-1-2.onrender.com/api/users/forgotpassword`, {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/forgotpassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +36,7 @@ const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
 const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => {
   const EmailVerification = localStorage.getItem("EmailVerification");
   try {
-    const response = await fetch(`https://osm-1-2.onrender.com/api/users/comparepassword`, {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/comparepassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => 
 const FetchResetPassword: SubmitHandler<ForgotPasswordData> = async (data) => {
   const EmailVerification = localStorage.getItem("EmailVerification");
   try {
-    const response = await fetch(`https://osm-1-2.onrender.com/api/users/resetpaasword`, {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/resetpaasword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
