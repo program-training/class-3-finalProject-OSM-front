@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  command;
   return {
     plugins: [react()],
     base: env.VITE_BASE ? `/${env.VITE_BASE}/` : "/",
