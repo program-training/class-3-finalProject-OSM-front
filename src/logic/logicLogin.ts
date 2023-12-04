@@ -15,14 +15,25 @@ const validationEmail = Yup.object().shape({
   email: Yup.string().required("Email is required").email("Enter a valid email"),
 });
 
+const graphqlEndpoint = `${import.meta.env.VITE_BASE_URL}graphql`;
+
 const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/forgotpassword`, {
+    const response = await fetch(graphqlEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: data.valueInput }),
+      body: JSON.stringify({
+        query: `
+          mutation ForgotPassword($email: String!) {
+            forgotPassword(email: $email)
+          }
+        `,
+        variables: {
+          email: data.valueInput,
+        },
+      }),
     });
     console.log("BodyFetch1: ", JSON.stringify({ email: data.valueInput }));
     const result = await response.text();
@@ -36,12 +47,22 @@ const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
 const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => {
   const EmailVerification = localStorage.getItem("EmailVerification");
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/comparepassword`, {
+    const response = await fetch(graphqlEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: EmailVerification, code: data.valueInput }),
+      body: JSON.stringify({
+        query: `
+          mutation ComparePassword($email: String!, $code: String!) {
+            comperepassword(email: $email, code: $code)
+          }
+        `,
+        variables: {
+          email: EmailVerification,
+          code: data.valueInput,
+        },
+      }),
     });
     console.log("BodyFetch2", JSON.stringify({ email: EmailVerification, code: data.valueInput }));
     const result = await response.text();
@@ -54,12 +75,25 @@ const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => 
 const FetchResetPassword: SubmitHandler<ForgotPasswordData> = async (data) => {
   const EmailVerification = localStorage.getItem("EmailVerification");
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/resetpaasword`, {
+    const response = await fetch(graphqlEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: EmailVerification, password: data.valueInput }),
+      body: JSON.stringify({
+        query: `
+          mutation ResetPassword($email: String!, $password: String!) {
+            resetPassword(email: $email, password: $password) {
+              success
+              message
+            }
+          }
+        `,
+        variables: {
+          email: EmailVerification,
+          password: data.valueInput,
+        },
+      }),
     });
     console.log("BodyFetch3", JSON.stringify({ email: EmailVerification, password: data.valueInput }));
     const result = await response.text();
