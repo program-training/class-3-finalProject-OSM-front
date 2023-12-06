@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { OrderInterface } from "../interface/orderInterface";
 import { DataGrid, GridCellParams, GridRenderCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../requestsToServer/requestToOrders";
+import { useGetOrders, useDeleteOrder, useUpdateOrderStatus } from "../requestsToServer/requestToOrders";
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
@@ -68,7 +68,7 @@ export function LatestOrders() {
       headerName: "Change Status",
       width: 200,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleChangeStatus(params.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
+        <Button onClick={() => handleChangeStatus()} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
           Change Status
         </Button>
       ),
@@ -76,25 +76,25 @@ export function LatestOrders() {
   ];
 
   useEffect(() => {
-    const fetchData = async ()=>{
-     const data = await requestGetOrders()
-     setOrders(data);
-    }
-    fetchData()
+    const fetchData = async () => {
+      const data = await useGetOrders();
+      setOrders(data);
+    };
+    fetchData();
   }, []);
 
   const handleRowClick = (params: GridCellParams) => {
-    console.log('Row Clicked:', params.row);
+    console.log("Row Clicked:", params.row);
   };
-  
+
   const handleDeleteOrder = async (orderId: string) => {
-    await requestDeleteOrder(orderId);
+    await useDeleteOrder();
     setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
   };
 
-  const handleChangeStatus = async (orderId: string) => {
-    await requestPutOrderStatus(orderId);
-    const response = await requestGetOrders();
+  const handleChangeStatus = async () => {
+    await useUpdateOrderStatus();
+    const response = await useGetOrders();
     setOrders(response);
   };
 
@@ -122,7 +122,7 @@ export function LatestOrders() {
             color: "#fafafa",
           },
           "& .MuiIconButton-root .MuiSvgIcon-root": {
-            color: "#fafafa", 
+            color: "#fafafa",
           },
         }}
       >
@@ -131,4 +131,3 @@ export function LatestOrders() {
     </Box>
   );
 }
-
