@@ -1,5 +1,5 @@
 import { Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
-import { CostumeOrders, OrderInterface } from '../interface/orderInterface';
+import { CostumeOrders } from '../interface/orderInterface';
 // import datetime from "datetime"
 interface OrderDetailsDialogProps {
   order: CostumeOrders | null;

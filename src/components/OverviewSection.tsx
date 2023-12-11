@@ -1,16 +1,13 @@
-// OverviewSection.tsx
 import { Grid, Container, Box } from "@mui/material";
 import { BarChart, LineChart, PieChart } from "@mui/x-charts";
 import { OverviewTotalProfit } from "../components/OverviewTotalProfit";
-import { OverviewTotalCustomers } from "../components/OverviewTotalCustomers";
 import { useEffect, useState } from "react";
 import { OrderInterface } from "../interface/orderInterface";
 import { requestGetOrders } from "../requestsToServer/requestToOrders";
 import axios from "axios";
-import { log } from "console";
+
 
 function OverviewSection() {
-  // const [orders, setOrders] = useState<OrderInterface[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [registrationsData, setRegistrationsData] = useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
   const [orderTime, setOrderTime] = useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
