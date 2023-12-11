@@ -1,11 +1,12 @@
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OrderInterface } from "../interface/orderInterface";
+import { CostumeOrders, OrderInterface } from "../interface/orderInterface";
 import { DataGrid, GridCellParams, GridRenderCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../requestsToServer/requestToOrders";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { OrderDetailsDialog } from "./OrderDetailsDialog";
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
@@ -21,6 +22,8 @@ const showToastMessage = () => {
 
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<CostumeOrders | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const columns = [
     {
       field: "id",
@@ -66,7 +69,7 @@ export function LatestOrders() {
       headerName: "Delete Order",
       width: 150,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleDeleteOrder(params.id.toString())} disabled={params.row.status !== "Pending"} startIcon={<DeleteIcon />}>
+        <Button onClick={(e) => handleDeleteOrder(e, params.id.toString())} disabled={params.row.status !== "Pending"} startIcon={<DeleteIcon />}>
           Delete
         </Button>
       ),
@@ -92,13 +95,18 @@ export function LatestOrders() {
   }, []);
 
   const handleRowClick = (params: GridCellParams) => {
-    console.log('Row Clicked:', params.row);
+    setSelectedOrder(params.row as CostumeOrders)
+    setOpenDialog(true);
   };
   
-  const handleDeleteOrder = async (orderId: string) => {
-    await requestDeleteOrder(orderId);
-    setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
-    showToastMessage()
+  const handleDeleteOrder = async (event: React.MouseEvent<HTMLButtonElement>, orderId: string) => {
+    event.stopPropagation(); 
+    const isConfirmed = window.confirm('Are you sure you want to delete this order?');
+    if (isConfirmed) {
+      await requestDeleteOrder(orderId);
+      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+      showToastMessage();
+    }
   };
 
   const handleChangeStatus = async (orderId: string) => {
@@ -116,6 +124,8 @@ export function LatestOrders() {
           address: order.shippingDetails.address,
           orderType: order.shippingDetails.orderType,
           status: order.status,
+          orderTime: order.orderTime,
+          userId: order.shippingDetails.userId,
         };
         return temp;
       })
@@ -137,6 +147,11 @@ export function LatestOrders() {
         }}
       >
         <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
+        <OrderDetailsDialog  
+        order={selectedOrder}
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+      />
       </Box>
       <ToastContainer />
     </Box>

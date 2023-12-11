@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Typography } from "@mui/material";
+import {  Box , Button, Typography } from "@mui/material";
 import { DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -88,10 +88,10 @@ export const CustomersTable = () => {
         });
         const usersData: UserInterface[] = response.data;
         setUsers(usersData);
-        setLoading(false); // Set loading to false when data is fetched
+        setLoading(false); 
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Make sure to set loading to false in case of an error
+        setLoading(false); 
       }
     };
     fetchData();

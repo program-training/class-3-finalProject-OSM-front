@@ -20,3 +20,13 @@ export interface OrderInterface {
     orderType: string
     id: string
   }
+
+  export interface CostumeOrders {
+    id: string;
+    price: number;
+    address: string;
+    orderType: string;
+    status: string;
+    orderTime: string;
+    userId: number;
+  }
