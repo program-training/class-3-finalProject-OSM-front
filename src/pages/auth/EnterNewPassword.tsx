@@ -34,6 +34,9 @@ const EnterNewPassword = () => {
         },
         body: JSON.stringify({ email: EmailVerification, code: data.code }),
       });
+      const result = await response.json();
+      console.log(result);
+      
       navigate("/enterNewPassword");
     } catch (error) {
       navigate("/enterNewPassword");
