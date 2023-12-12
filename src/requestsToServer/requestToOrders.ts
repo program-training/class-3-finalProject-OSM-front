@@ -1,95 +1,44 @@
-import { useMutation } from "@apollo/client";
-import { gql } from "@apollo/client/core";
-import { SubmitHandler } from "react-hook-form";
-import * as Yup from "yup";
-import { ForgotPasswordData } from "../interface/loginInterface";
-// import { OrderInterface } from "../interface/orderInterface";
+import axios from "axios";
+import { OrderInterface } from "../interface/orderInterface";
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
-    .matches(/[0-9]/, "Password must contain at least one number"),
-});
-
-const validationEmail = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-});
-
-const FORGOT_PASSWORD_MUTATION = gql`
-  mutation ForgotPassword($email: String!) {
-    forgotPassword(email: $email)
-  }
-`;
-
-const COMPARE_PASSWORD_MUTATION = gql`
-  mutation ComparePassword($email: String!, $code: String!) {
-    comparePassword(email: $email, code: $code) # Corrected the mutation name
-  }
-`;
-
-const RESET_PASSWORD_MUTATION = gql`
-  mutation ResetPassword($email: String!, $password: String!) {
-    resetPassword(email: $email, password: $password) {
-      success
-      message
-    }
-  }
-`;
-
-const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
-  const [forgotPassword] = useMutation(FORGOT_PASSWORD_MUTATION);
-
+export const requestGetOrders = async () => {
+  const token = localStorage.getItem("token");
   try {
-    const result = await forgotPassword({
-      variables: {
-        email: data.valueInput,
+    const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
+      headers: {
+        Authorization: token,
       },
     });
-
-    console.log(result);
-    localStorage.setItem("EmailVerification", data.valueInput);
-  } catch (error: any) {
-    console.error("Error sending ForgotPassword mutation:", error.message);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
   }
 };
 
-const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => {
-  const EmailVerification = localStorage.getItem("EmailVerification");
-  const [comparePassword] = useMutation(COMPARE_PASSWORD_MUTATION);
-
+export const requestDeleteOrder = async (orderId: string) => {
   try {
-    const result = await comparePassword({
-      variables: {
-        email: EmailVerification,
-        code: data.valueInput,
-      },
-    });
-
-    console.log(result);
-  } catch (error: any) {
-    console.error("Error sending ComparePassword mutation:", error.message);
+    await axios.delete(`${import.meta.env.VITE_BASE_URL}orders/${orderId}`);
+  } catch (error) {
+    console.error(`Error deleting order with ID ${orderId}:`, error);
+    throw error;
   }
 };
 
-const FetchResetPassword: SubmitHandler<ForgotPasswordData> = async (data) => {
-  const EmailVerification = localStorage.getItem("EmailVerification");
-  const [resetPassword] = useMutation(RESET_PASSWORD_MUTATION);
-
+export const requestPutOrderStatus = async (orderId: string) => {
+  const token = localStorage.getItem("token");
   try {
-    const result = await resetPassword({
-      variables: {
-        email: EmailVerification,
-        password: data.valueInput,
-      },
-    });
-
-    console.log(result);
-  } catch (error: any) {
-    console.error("Error sending ResetPassword mutation:", error.message);
+    await axios.put(
+      `${import.meta.env.VITE_BASE_URL}orders/${orderId}`,
+      { status: "Delivered" },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+  } catch (error) {
+    console.error(`Error changing status for order with ID ${orderId}:`, error);
+    throw error;
   }
 };
-
-export { validationSchema, validationEmail, FetchRecover, FetchComparePassword, FetchResetPassword };
