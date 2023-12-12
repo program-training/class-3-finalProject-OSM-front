@@ -7,6 +7,13 @@ import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { gql} from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: "http://localhost:8080/graphql",
+  cache: new InMemoryCache(),
+});
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
@@ -18,7 +25,7 @@ const showToastMessage = () => {
   toast.success("The deletion was successful !", {
     position: toast.POSITION.TOP_LEFT,
   });
-}
+};
 
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
@@ -86,22 +93,47 @@ export function LatestOrders() {
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async ()=>{
-     const data = await requestGetOrders()
-     setOrders(data);
-    }
-    fetchData()
-  }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    const { data } = await client.query({
+      query: gql`
+        query GetAllOrders {
+          getAllOrders {
+            _id,
+            price,
+            shippingDetails{address},
+            shippingDetails{orderType},
+            status,
+            orderTime,
+            shippingDetails{userId}
+          }
+        }
+      ` 
+    });
+    console.log(data.getAllOrders);
+    setOrders(data.getAllOrders);
+  };
+
+  fetchData();
+}, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await requestGetOrders();
+      
+
+  //   };
+  //   fetchData();
+  // }, []);
 
   const handleRowClick = (params: GridCellParams) => {
-    setSelectedOrder(params.row as CostumeOrders)
+    setSelectedOrder(params.row as CostumeOrders);
     setOpenDialog(true);
   };
-  
+
   const handleDeleteOrder = async (event: React.MouseEvent<HTMLButtonElement>, orderId: string) => {
-    event.stopPropagation(); 
-    const isConfirmed = window.confirm('Are you sure you want to delete this order?');
+    event.stopPropagation();
+    const isConfirmed = window.confirm("Are you sure you want to delete this order?");
     if (isConfirmed) {
       await requestDeleteOrder(orderId);
       setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
@@ -112,7 +144,7 @@ export function LatestOrders() {
   const handleChangeStatus = async (orderId: string) => {
     await requestPutOrderStatus(orderId);
     const response = await requestGetOrders();
-    showToastMessage()
+    showToastMessage();
     setOrders(response);
   };
 
@@ -142,19 +174,14 @@ export function LatestOrders() {
             color: "#fafafa",
           },
           "& .MuiDataGrid-columnHeaders .MuiIconButton-root .MuiSvgIcon-root": {
-            color: "#fafafa", 
+            color: "#fafafa",
           },
         }}
       >
         <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
-        <OrderDetailsDialog  
-        order={selectedOrder}
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-      />
+        <OrderDetailsDialog order={selectedOrder} open={openDialog} onClose={() => setOpenDialog(false)} />
       </Box>
       <ToastContainer />
     </Box>
   );
 }
-
