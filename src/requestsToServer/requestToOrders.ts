@@ -1,95 +1,113 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client/core";
-import { SubmitHandler } from "react-hook-form";
-import * as Yup from "yup";
-import { ForgotPasswordData } from "../interface/loginInterface";
-// import { OrderInterface } from "../interface/orderInterface";
+import { OrderInterface } from "../interface/orderInterface";
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
-    .matches(/[0-9]/, "Password must contain at least one number"),
-});
-
-const validationEmail = Yup.object().shape({
-  email: Yup.string().required("Email is required").email("Enter a valid email"),
-});
-
-const FORGOT_PASSWORD_MUTATION = gql`
-  mutation ForgotPassword($email: String!) {
-    forgotPassword(email: $email)
+const GET_ORDERS_QUERY = gql`
+  query {
+    orders {
+      _id
+      cartItems {
+        id
+        name
+        description
+        price
+        quantity
+      }
+      orderTime
+      status
+      price
+      shippingDetails {
+        address
+        userId
+        contactNumber
+        orderType
+        id
+      }
+    }
   }
 `;
 
-const COMPARE_PASSWORD_MUTATION = gql`
-  mutation ComparePassword($email: String!, $code: String!) {
-    comparePassword(email: $email, code: $code) # Corrected the mutation name
-  }
-`;
-
-const RESET_PASSWORD_MUTATION = gql`
-  mutation ResetPassword($email: String!, $password: String!) {
-    resetPassword(email: $email, password: $password) {
+const DELETE_ORDER_MUTATION = gql`
+  mutation deleteOrder($orderId: String!) {
+    deleteByOrderId(orderId: $orderId) {
       success
       message
     }
   }
 `;
 
-const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
-  const [forgotPassword] = useMutation(FORGOT_PASSWORD_MUTATION);
-
-  try {
-    const result = await forgotPassword({
-      variables: {
-        email: data.valueInput,
-      },
-    });
-
-    console.log(result);
-    localStorage.setItem("EmailVerification", data.valueInput);
-  } catch (error: any) {
-    console.error("Error sending ForgotPassword mutation:", error.message);
+const UPDATE_ORDER_STATUS_MUTATION = gql`
+  mutation updateOrderStatus($orderId: String!, $order: OrderInput!) {
+    updateOrder(orderId: $orderId, updatedData: $order) {
+      _id
+      status
+    }
   }
+`;
+
+export const requestGetOrders = () => {
+  const { data, loading, error } = useQuery(GET_ORDERS_QUERY);
+
+  if (loading) {
+    console.log("Loading...");
+  }
+
+  if (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
+
+  return data?.orders as OrderInterface[];
 };
 
-const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => {
-  const EmailVerification = localStorage.getItem("EmailVerification");
-  const [comparePassword] = useMutation(COMPARE_PASSWORD_MUTATION);
-
-  try {
-    const result = await comparePassword({
-      variables: {
-        email: EmailVerification,
-        code: data.valueInput,
-      },
+export const requestDeleteOrder = () => {
+  return async (orderId: string) => {
+    const [deleteOrder, { data, loading, error }] = useMutation(DELETE_ORDER_MUTATION, {
+      variables: { orderId },
     });
 
-    console.log(result);
-  } catch (error: any) {
-    console.error("Error sending ComparePassword mutation:", error.message);
-  }
+    if (loading) {
+      console.log("Loading...");
+    }
+
+    if (error) {
+      console.error(`Error deleting order with ID ${orderId}:`, error);
+      throw error;
+    }
+
+    const responseData = data?.deleteByOrderId;
+    if (responseData.success) {
+      console.log(`Order with ID ${orderId} deleted successfully`);
+    } else {
+      console.error(`Error deleting order with ID ${orderId}: ${responseData.message}`);
+    }
+
+    return deleteOrder; // Use or return deleteOrder if needed
+  };
 };
 
-const FetchResetPassword: SubmitHandler<ForgotPasswordData> = async (data) => {
-  const EmailVerification = localStorage.getItem("EmailVerification");
-  const [resetPassword] = useMutation(RESET_PASSWORD_MUTATION);
-
-  try {
-    const result = await resetPassword({
-      variables: {
-        email: EmailVerification,
-        password: data.valueInput,
-      },
+export const requestPutOrderStatus = () => {
+  return async (orderId: string) => {
+    const [updateOrderStatus, { data, loading, error }] = useMutation(UPDATE_ORDER_STATUS_MUTATION, {
+      variables: { orderId, order: { status: "Delivered" } },
     });
 
-    console.log(result);
-  } catch (error: any) {
-    console.error("Error sending ResetPassword mutation:", error.message);
-  }
-};
+    if (loading) {
+      console.log("Loading...");
+    }
 
-export { validationSchema, validationEmail, FetchRecover, FetchComparePassword, FetchResetPassword };
+    if (error) {
+      console.error(`Error changing status for order with ID ${orderId}:`, error);
+      throw error;
+    }
+
+    const responseData = data?.updateOrder;
+    if (responseData.success) {
+      console.log(`Status for order with ID ${orderId} changed to Delivered`);
+    } else {
+      console.error(`Error changing status for order with ID ${orderId}: ${responseData.message}`);
+    }
+
+    return updateOrderStatus; // Use or return updateOrderStatus if needed
+  };
+};
