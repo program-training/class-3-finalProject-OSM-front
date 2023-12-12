@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { gql} from "@apollo/client";
+import { gql } from "@apollo/client";
 
 const client = new ApolloClient({
   uri: "http://localhost:8080/graphql",
@@ -93,38 +93,35 @@ export function LatestOrders() {
     },
   ];
 
-useEffect(() => {
-  const fetchData = async () => {
-    const { data } = await client.query({
-      query: gql`
-        query GetAllOrders {
-          getAllOrders {
-            _id,
-            price,
-            shippingDetails{address},
-            shippingDetails{orderType},
-            status,
-            orderTime,
-            shippingDetails{userId}
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await client.query({
+        query: gql`
+          query GetAllOrders {
+            getAllOrders {
+              _id
+              price
+              shippingDetails {
+                address
+              }
+              shippingDetails {
+                orderType
+              }
+              status
+              orderTime
+              shippingDetails {
+                userId
+              }
+            }
           }
-        }
-      ` 
-    });
-    console.log(data.getAllOrders);
-    setOrders(data.getAllOrders);
-  };
+        `,
+      });
+      console.log(data.getAllOrders);
+      setOrders(data.getAllOrders);
+    };
 
-  fetchData();
-}, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await requestGetOrders();
-      
-
-  //   };
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   const handleRowClick = (params: GridCellParams) => {
     setSelectedOrder(params.row as CostumeOrders);

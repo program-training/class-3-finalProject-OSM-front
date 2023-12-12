@@ -35,19 +35,38 @@ const Register = () => {
   });
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/register`, {
+      //.env שנה לנתיב render כשיתעדכן
+      const response = await fetch(`http://localhost:8080/graphql`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          query: `
+            mutation RegisterUser($email: String!, $password: String!) {
+              registerUser(email: $email, password: $password) {
+                user {
+                  id
+                  email
+                }
+                accessToken
+              }
+            }
+          `,
+          variables: {
+            email: data.email,
+            password: data.password,
+          },
+        }),
       });
+
       if (response.status === 500) {
         seterror("Username already exists. Please choose a different username.");
         return;
       }
       const jsonResponse = await response.json();
-      if (jsonResponse.accessToken) {
+      console.log(jsonResponse);
+      if (jsonResponse.data.registerUser.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
         localStorage.setItem("email", data.email);
         localStorage.setItem("status", JSON.stringify(true));
