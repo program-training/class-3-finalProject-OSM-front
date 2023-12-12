@@ -123,14 +123,6 @@ export function LatestOrders() {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await requestGetOrders();
-
-  //   };
-  //   fetchData();
-  // }, []);
-
   const handleRowClick = (params: GridCellParams) => {
     setSelectedOrder(params.row as CostumeOrders);
     setOpenDialog(true);
