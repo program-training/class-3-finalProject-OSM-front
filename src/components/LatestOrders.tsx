@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { OrderInterface } from "../interface/orderInterface";
 import { DataGrid, GridCellParams, GridRenderCellParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../requestsToServer/requestToOrders";
+import { useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client/core";
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
@@ -11,8 +12,94 @@ const statusMap: { [key: string]: string } = {
   Refunded: "#ff00009e",
 };
 
+const GET_ORDERS = gql`
+  query GetOrders {
+    orders {
+      _id
+      price
+      shippingDetails {
+        address
+        orderType
+      }
+      status
+    }
+  }
+`;
+
+const DELETE_ORDER = gql`
+  mutation DeleteOrder($orderId: ID!) {
+    deleteOrder(orderId: $orderId)
+  }
+`;
+
+const CHANGE_ORDER_STATUS = gql`
+  mutation ChangeOrderStatus($orderId: ID!) {
+    changeOrderStatus(orderId: $orderId) {
+      _id
+      price
+      shippingDetails {
+        address
+        orderType
+      }
+      status
+    }
+  }
+`;
+
 export function LatestOrders() {
+  const { data } = useQuery(GET_ORDERS);
+  const [deleteOrder] = useMutation(DELETE_ORDER);
+  const [changeOrderStatus] = useMutation(CHANGE_ORDER_STATUS);
+
   const [orders, setOrders] = useState<OrderInterface[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      setOrders(data.orders);
+    }
+  }, [data]);
+
+  const handleRowClick = (params: GridCellParams) => {
+    console.log("Row Clicked:", params.row);
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      await deleteOrder({
+        variables: {
+          orderId: orderId,
+        },
+      });
+      const updatedOrders = orders.filter((order) => order._id !== orderId);
+      setOrders(updatedOrders);
+    } catch (error) {
+      console.error(`Error deleting order with ID ${orderId}:`, error);
+    }
+  };
+
+  const handleChangeStatus = async (orderId: string) => {
+    try {
+      const result = await changeOrderStatus({
+        variables: {
+          orderId: orderId,
+        },
+      });
+      setOrders(result.data.changeOrderStatus);
+    } catch (error) {
+      console.error(`Error changing status for order with ID ${orderId}:`, error);
+    }
+  };
+
+  const customOrders = orders
+    ? orders.map((order: OrderInterface) => ({
+        id: order._id,
+        price: order.price,
+        address: order.shippingDetails.address,
+        orderType: order.shippingDetails.orderType,
+        status: order.status,
+      }))
+    : [];
+
   const columns = [
     {
       field: "id",
@@ -58,7 +145,7 @@ export function LatestOrders() {
       headerName: "Delete Order",
       width: 150,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleDeleteOrder(params.id.toString())} disabled={params.row.status !== "Pending"} startIcon={<DeleteIcon />}>
+        <Button onClick={() => handleDeleteOrder(params.row.id.toString())} disabled={params.row.status !== "Pending"} startIcon={<DeleteIcon />}>
           Delete
         </Button>
       ),
@@ -68,48 +155,13 @@ export function LatestOrders() {
       headerName: "Change Status",
       width: 200,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleChangeStatus(params.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
+        <Button onClick={() => handleChangeStatus(params.row.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
           Change Status
         </Button>
       ),
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async ()=>{
-     const data = await requestGetOrders()
-     setOrders(data);
-    }
-    fetchData()
-  }, []);
-
-  const handleRowClick = (params: GridCellParams) => {
-    console.log('Row Clicked:', params.row);
-  };
-  
-  const handleDeleteOrder = async (orderId: string) => {
-    await requestDeleteOrder(orderId);
-    setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
-  };
-
-  const handleChangeStatus = async (orderId: string) => {
-    await requestPutOrderStatus(orderId);
-    const response = await requestGetOrders();
-    setOrders(response);
-  };
-
-  const costumeOrders = orders
-    ? orders.map((order: OrderInterface) => {
-        const temp = {
-          id: order._id,
-          price: order.price,
-          address: order.shippingDetails.address,
-          orderType: order.shippingDetails.orderType,
-          status: order.status,
-        };
-        return temp;
-      })
-    : [];
   return (
     <Box sx={{ margin: "20px" }}>
       <Box
@@ -122,13 +174,12 @@ export function LatestOrders() {
             color: "#fafafa",
           },
           "& .MuiIconButton-root .MuiSvgIcon-root": {
-            color: "#fafafa", 
+            color: "#fafafa",
           },
         }}
       >
-        <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={costumeOrders || []} columns={columns} />
+        <DataGrid onCellClick={handleRowClick} getRowId={(row: { id: string }) => row.id} rows={customOrders || []} columns={columns} />
       </Box>
     </Box>
   );
 }
-

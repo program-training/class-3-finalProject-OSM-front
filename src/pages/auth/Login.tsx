@@ -44,27 +44,44 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/login`, {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}graphql`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          query: `
+            mutation LoginUser($email: String!, $password: String!) {
+              loginUser(email: $email, password: $password) {
+                user {
+                  id
+                  email
+                }
+                accessToken
+              }
+            }
+          `,
+          variables: {
+            email: data.email,
+            password: data.password,
+          },
+        }),
       });
-      console.log(data);
 
       const json = await response.json();
 
       console.log(json);
-      if (json.accessToken) {
-        localStorage.setItem("token", json.accessToken);
-        localStorage.setItem("user", data.email || "");
+
+      if (json.data && json.data.loginUser && json.data.loginUser.accessToken) {
+        const { user, accessToken } = json.data.loginUser;
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("user", user.email);
         localStorage.setItem("status", JSON.stringify(true));
         dispatch(setStatus(true));
-        dispatch(setUser(data.email));
+        dispatch(setUser(user.email));
         navigate("/home");
       } else {
-        setLoginError(json.message || "Login failed");
+        setLoginError(json.errors ? json.errors[0].message : "Login failed");
       }
     } catch (error) {
       console.error(error);
@@ -196,7 +213,7 @@ const Login = () => {
             background: " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
           }}
         >
-          <img src="https://material-kit-react.devias.io/assets/auth-illustration.svg" alt="" />
+          <img src="https://avatars.githubusercontent.com/u/125798566?v=4" alt="" />
         </Box>
       </Box>
     </>

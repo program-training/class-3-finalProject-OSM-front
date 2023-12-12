@@ -35,19 +35,37 @@ const Register = () => {
   });
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/register`, {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}graphql`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          query: `
+            mutation RegisterUser($email: String!, $password: String!) {
+              registerUser(email: $email, password: $password) {
+                user {
+                  id
+                  email
+                }
+                accessToken
+              }
+            }
+          `,
+          variables: {
+            email: data.email,
+            password: data.password,
+          },
+        }),
       });
+
       if (response.status === 500) {
         seterror("Username already exists. Please choose a different username.");
         return;
       }
       const jsonResponse = await response.json();
-      if (jsonResponse.accessToken) {
+      console.log(jsonResponse);
+      if (jsonResponse.data.registerUser.accessToken) {
         localStorage.setItem("token", jsonResponse.accessToken);
         localStorage.setItem("email", data.email);
         localStorage.setItem("status", JSON.stringify(true));
@@ -108,7 +126,7 @@ const Register = () => {
             background: " radial-gradient(50% 50% at 50% 50%, rgb(18, 38, 71) 0%, rgb(9, 14, 35) 100%)",
           }}
         >
-          <img src="https://material-kit-react.devias.io/assets/auth-illustration.svg" alt="" />
+          <img src="https://avatars.githubusercontent.com/u/125798566?v=4" alt="" />
         </Box>
       </Box>
     </>

@@ -1,5 +1,7 @@
-import * as Yup from "yup";
+import { useMutation } from "@apollo/client";
+import { gql } from "@apollo/client/core";
 import { SubmitHandler } from "react-hook-form";
+import * as Yup from "yup";
 import { ForgotPasswordData } from "../interface/loginInterface";
 
 const validationSchema = Yup.object().shape({
@@ -15,57 +17,77 @@ const validationEmail = Yup.object().shape({
   email: Yup.string().required("Email is required").email("Enter a valid email"),
 });
 
+const FORGOT_PASSWORD_MUTATION = gql`
+  mutation ForgotPassword($email: String!) {
+    forgotPassword(email: $email)
+  }
+`;
+
+const COMPARE_PASSWORD_MUTATION = gql`
+  mutation ComparePassword($email: String!, $code: String!) {
+    comperepassword(email: $email, code: $code)
+  }
+`;
+
+const RESET_PASSWORD_MUTATION = gql`
+  mutation ResetPassword($email: String!, $password: String!) {
+    resetPassword(email: $email, password: $password) {
+      success
+      message
+    }
+  }
+`;
+
 const FetchRecover: SubmitHandler<ForgotPasswordData> = async (data) => {
+  const [forgotPassword] = useMutation(FORGOT_PASSWORD_MUTATION);
+
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/forgotpassword`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const result = await forgotPassword({
+      variables: {
+        email: data.valueInput,
       },
-      body: JSON.stringify({ email: data.valueInput }),
     });
-    console.log("BodyFetch1: ", JSON.stringify({ email: data.valueInput }));
-    const result = await response.text();
+
     console.log(result);
     localStorage.setItem("EmailVerification", data.valueInput);
-  } catch (error) {
-    console.error("Error sending POST request:", error);
+  } catch (error: any) {
+    console.error("Error sending ForgotPassword mutation:", error.message);
   }
 };
 
 const FetchComparePassword: SubmitHandler<ForgotPasswordData> = async (data) => {
   const EmailVerification = localStorage.getItem("EmailVerification");
+  const [comparePassword] = useMutation(COMPARE_PASSWORD_MUTATION);
+
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/comparepassword`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const result = await comparePassword({
+      variables: {
+        email: EmailVerification,
+        code: data.valueInput,
       },
-      body: JSON.stringify({ email: EmailVerification, code: data.valueInput }),
     });
-    console.log("BodyFetch2", JSON.stringify({ email: EmailVerification, code: data.valueInput }));
-    const result = await response.text();
+
     console.log(result);
-  } catch (error) {
-    console.error("Error sending POST request:", error);
+  } catch (error: any) {
+    console.error("Error sending ComparePassword mutation:", error.message);
   }
 };
 
 const FetchResetPassword: SubmitHandler<ForgotPasswordData> = async (data) => {
   const EmailVerification = localStorage.getItem("EmailVerification");
+  const [resetPassword] = useMutation(RESET_PASSWORD_MUTATION);
+
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}users/resetpaasword`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const result = await resetPassword({
+      variables: {
+        email: EmailVerification,
+        password: data.valueInput,
       },
-      body: JSON.stringify({ email: EmailVerification, password: data.valueInput }),
     });
-    console.log("BodyFetch3", JSON.stringify({ email: EmailVerification, password: data.valueInput }));
-    const result = await response.text();
+
     console.log(result);
-  } catch (error) {
-    console.error("Error sending POST request:", error);
+  } catch (error: any) {
+    console.error("Error sending ResetPassword mutation:", error.message);
   }
 };
 
