@@ -7,7 +7,13 @@ pipeline {
                 checkout scm
             }
         }
-
+        stage('clean work space'){
+            steps{
+                script {
+                    sh 'npm cache clean --force'
+                }
+            }
+        }
         stage('Install Dependencies') {
             steps {
                 script {
@@ -23,22 +29,6 @@ pipeline {
                     echo 'Testing frontend....'
                     sh 'npm run test'
                 }
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                script {
-                    echo 'Building frontend...'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // Add your deployment steps here
             }
         }
     }
