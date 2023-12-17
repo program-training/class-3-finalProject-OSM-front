@@ -25,21 +25,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Frontend') {
-            steps {
-                script {
-                    echo 'Building frontend...'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // Add your deployment steps here
-            }
-        }
     }
 }
