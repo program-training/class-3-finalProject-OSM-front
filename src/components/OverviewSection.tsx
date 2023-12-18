@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { OrderInterface } from "../interface/orderInterface";
 import { requestGetOrders } from "../requestsToServer/requestToOrders";
 import axios from "axios";
+// import { ApolloQueryResult } from "@apollo/client";
 
 
 function OverviewSection() {
@@ -62,11 +63,11 @@ interface StatusOrderInterface{
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orders = await requestGetOrders();
-        const ordersData: OrderInterface[] = orders;
+        const orders = (await requestGetOrders()).data;
+        const ordersData:{ getAllOrders: OrderInterface[] }= orders;
 
         // setOrders(ordersData);
-        const calculatedTotalPrice = ordersData.reduce((total, order) => {
+        const calculatedTotalPrice = ordersData.getAllOrders.reduce((total, order) => {
           return (
             total +
             order.cartItems.reduce((itemTotal, item) => {

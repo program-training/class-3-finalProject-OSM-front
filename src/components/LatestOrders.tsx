@@ -7,13 +7,7 @@ import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { gql } from "@apollo/client";
 
-const client = new ApolloClient({
-  uri: "http://localhost:8080/graphql",
-  cache: new InMemoryCache(),
-});
 
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
@@ -95,33 +89,18 @@ export function LatestOrders() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await client.query({
-        query: gql`
-          query GetAllOrders {
-            getAllOrders {
-              _id
-              price
-              shippingDetails {
-                address
-              }
-              shippingDetails {
-                orderType
-              }
-              status
-              orderTime
-              shippingDetails {
-                userId
-              }
-            }
-          }
-        `,
-      });
-      console.log(data.getAllOrders);
-      setOrders(data.getAllOrders);
+      try {
+        const data = (await requestGetOrders()).data;
+        console.log(data.getAllOrders);
+        setOrders(data.getAllOrders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
     };
-
+  
     fetchData();
   }, []);
+  
 
   const handleRowClick = (params: GridCellParams) => {
     setSelectedOrder(params.row as CostumeOrders);
@@ -137,28 +116,68 @@ export function LatestOrders() {
       showToastMessage();
     }
   };
+  const handleChangeStatus = async (orderId:string) => {
 
-  const handleChangeStatus = async (orderId: string) => {
-    await requestPutOrderStatus(orderId);
-    const response = await requestGetOrders();
+   
+    await requestPutOrderStatus(orderId); 
+    
+   
+    const updatedOrders:OrderInterface[] = [...orders];
+  
+  
+    const order = orders.find(o => o._id === orderId);
+    if (order){
+    order.status = "Delivered";
+    }
+   
+    setOrders(updatedOrders);
+  
     showToastMessage();
-    setOrders(response);
-  };
+  
+  }
 
+//  const handleChangeStatus = async (orderId: string) => {
+//    await requestPutOrderStatus(orderId);
+//     const response = (await requestGetOrders()).data;
+//     showToastMessage();
+//     setOrders(response.getAllOrders);
+//     } 
+    // await requestPutOrderStatus(orderId);
+    // const response = (await requestGetOrders()).data;
+    // showToastMessage();
+    // setOrders(response.getAllOrders);
+  // };
+ 
+
+  // const costumeOrders = orders
+  //   ? orders.map((order: OrderInterface) => {
+  //       const temp = {
+  //         id: order._id,
+  //         price: order.price,
+  //         address: order.shippingDetails.address,
+  //         orderType: order.shippingDetails.orderType,
+  //         status: order.status,
+  //         orderTime: order.orderTime,
+  //         userId: order.shippingDetails.userId,
+  //       };
+  //       return temp;
+  //     })
+  //   : [];
   const costumeOrders = orders
-    ? orders.map((order: OrderInterface) => {
-        const temp = {
-          id: order._id,
-          price: order.price,
-          address: order.shippingDetails.address,
-          orderType: order.shippingDetails.orderType,
-          status: order.status,
-          orderTime: order.orderTime,
-          userId: order.shippingDetails.userId,
-        };
-        return temp;
-      })
-    : [];
+  ? orders.map((order: OrderInterface) => {
+      const temp = {
+        id: order._id,
+        price: order.price,
+        address: order.shippingDetails && order.shippingDetails.address || "N/A",
+        orderType: order.shippingDetails && order.shippingDetails.orderType || "N/A",
+        status: order.status,
+        orderTime: order.orderTime,
+        userId: order.shippingDetails && order.shippingDetails.userId || "N/A",
+      };
+      return temp;
+    })
+  : [];
+
   return (
     <Box sx={{ margin: "20px" }}>
       <Box
