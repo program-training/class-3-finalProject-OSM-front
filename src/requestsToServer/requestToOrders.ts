@@ -30,7 +30,22 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export const requestGetOrders = async (): Promise<ApolloQueryResult<{ getAllOrders: OrderInterface[] }>> => {
+// export const requestGetOrders = async () => {
+//   const token = localStorage.getItem("token");
+//   try {
+//     const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
+//       headers: {
+//         Authorization: token,
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching orders:", error);
+//     throw error;
+//   }
+// };
+
+export const requestGetOrders = async () => {
   try {
     const result = await client.query<{ getAllOrders: OrderInterface[] }>({
       query: gql`
@@ -53,7 +68,7 @@ export const requestGetOrders = async (): Promise<ApolloQueryResult<{ getAllOrde
         }
       `,
     });
-    return result;
+    return result.data.getAllOrders;
   } catch (error) {
     console.error("Error in requestGetOrders:", error);
     throw error;

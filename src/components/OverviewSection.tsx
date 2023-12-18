@@ -68,16 +68,10 @@ function OverviewSection() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orders = (await requestGetOrders()).data;
-        const ordersData: { getAllOrders: OrderInterface[] } = orders;
-        const calculatedTotalPrice = ordersData.getAllOrders.reduce((total, order) => {
-          return (
-            total +
-            order.cartItems.reduce((itemTotal, item) => {
-              return itemTotal + item.price * item.quantity;
-            }, 0)
-          );
-        }, 0);
+        const orders = await requestGetOrders();
+        const ordersData = orders;
+        const calculatedTotalPrice = ordersData.reduce((total, order) => {
+          return (total + order.price);}, 0);
         setTotalPrice(calculatedTotalPrice);
       } catch (error) {
         console.error("Error fetching data:", error);
