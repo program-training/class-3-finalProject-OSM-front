@@ -123,13 +123,32 @@ export function LatestOrders() {
       showToastMessage();
     }
   };
+  const handleChangeStatus = async (orderId:string) => {
 
-  const handleChangeStatus = async (orderId: string) => {
-   await requestPutOrderStatus(orderId);
-    const response = (await requestGetOrders()).data;
-    showToastMessage();
-    setOrders(response.getAllOrders);
+   
+    await requestPutOrderStatus(orderId); 
+    
+   
+    const updatedOrders:OrderInterface[] = [...orders];
+  
+  
+    const order = orders.find(o => o._id === orderId);
+    if (order){
+    order.status = "Delivered";
     }
+   
+    setOrders(updatedOrders);
+  
+    showToastMessage();
+  
+  }
+
+//  const handleChangeStatus = async (orderId: string) => {
+//    await requestPutOrderStatus(orderId);
+//     const response = (await requestGetOrders()).data;
+//     showToastMessage();
+//     setOrders(response.getAllOrders);
+//     } 
     // await requestPutOrderStatus(orderId);
     // const response = (await requestGetOrders()).data;
     // showToastMessage();
@@ -137,20 +156,35 @@ export function LatestOrders() {
   // };
  
 
+  // const costumeOrders = orders
+  //   ? orders.map((order: OrderInterface) => {
+  //       const temp = {
+  //         id: order._id,
+  //         price: order.price,
+  //         address: order.shippingDetails.address,
+  //         orderType: order.shippingDetails.orderType,
+  //         status: order.status,
+  //         orderTime: order.orderTime,
+  //         userId: order.shippingDetails.userId,
+  //       };
+  //       return temp;
+  //     })
+  //   : [];
   const costumeOrders = orders
-    ? orders.map((order: OrderInterface) => {
-        const temp = {
-          id: order._id,
-          price: order.price,
-          address: order.shippingDetails.address,
-          orderType: order.shippingDetails.orderType,
-          status: order.status,
-          orderTime: order.orderTime,
-          userId: order.shippingDetails.userId,
-        };
-        return temp;
-      })
-    : [];
+  ? orders.map((order: OrderInterface) => {
+      const temp = {
+        id: order._id,
+        price: order.price,
+        address: order.shippingDetails && order.shippingDetails.address || "N/A",
+        orderType: order.shippingDetails && order.shippingDetails.orderType || "N/A",
+        status: order.status,
+        orderTime: order.orderTime,
+        userId: order.shippingDetails && order.shippingDetails.userId || "N/A",
+      };
+      return temp;
+    })
+  : [];
+
   return (
     <Box sx={{ margin: "20px" }}>
       <Box

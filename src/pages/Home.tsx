@@ -1,10 +1,10 @@
 import { LatestOrders } from "../components/LatestOrders";
-// import OverviewSection from "../components/OverviewSection";
+import OverviewSection from "../components/OverviewSection";
 function Home() {
   return (
     <div>
       <div>
-        {/* <OverviewSection /> */}
+        <OverviewSection />
       </div>
       <LatestOrders />
     </div>
