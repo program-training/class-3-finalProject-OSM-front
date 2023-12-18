@@ -3,29 +3,34 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { ApolloQueryResult } from "@apollo/client";
 
-const client = new ApolloClient({
+export const GET_TIME_REGISTER = gql`
+  query GetTimeRegister {
+    getTimeRegister
+  }
+`;
+
+export const HANDLE_ORDERS_STATUS_MUTATION = gql`
+  mutation {
+    handleGetAllOrdersStatus {
+      Delivered
+      Pending
+      Refunded
+    }
+  }
+`;
+
+export const GET_ORDERS_FOR_HOURS = gql`
+  query GetOrdersForHours2 {
+    getOrdersForHours
+  }
+`;
+
+export const client = new ApolloClient({
   uri: `${import.meta.env.VITE_BASE_URL}`,
   cache: new InMemoryCache(),
 });
 
-// export const requestGetOrders = async () => {
-//   const token = localStorage.getItem("token");
-//   try {
-//     const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
-//       headers: {
-//         Authorization: token,
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching orders:", error);
-//     throw error;
-//   }
-// };
-
-export const requestGetOrders = async (): Promise<
-  ApolloQueryResult<{ getAllOrders: OrderInterface[] }>
-> => {
+export const requestGetOrders = async (): Promise<ApolloQueryResult<{ getAllOrders: OrderInterface[] }>> => {
   try {
     const result = await client.query<{ getAllOrders: OrderInterface[] }>({
       query: gql`
@@ -55,9 +60,7 @@ export const requestGetOrders = async (): Promise<
   }
 };
 
-export const requestDeleteOrder = async (
-  id: string
-): Promise<{ _id: string }> => {
+export const requestDeleteOrder = async (id: string): Promise<{ _id: string }> => {
   try {
     const { data } = await client.mutate({
       mutation: gql`
@@ -77,8 +80,7 @@ export const requestDeleteOrder = async (
   }
 };
 
-export const requestPutOrderStatus = async (  id: string
-  ): Promise<{ _id: string }> => {
+export const requestPutOrderStatus = async (id: string): Promise<{ _id: string }> => {
   try {
     const { data } = await client.mutate({
       mutation: gql`
@@ -91,9 +93,9 @@ export const requestPutOrderStatus = async (  id: string
       `,
       variables: {
         orderId: id,
-        "order":{
-          "status": "Delivered"
-        }
+        order: {
+          status: "Delivered",
+        },
       },
     });
 
