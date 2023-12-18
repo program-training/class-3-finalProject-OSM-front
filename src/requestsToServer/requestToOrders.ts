@@ -1,7 +1,6 @@
 import { OrderInterface } from "../interface/orderInterface";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { ApolloQueryResult } from "@apollo/client";
 
 export const GET_TIME_REGISTER = gql`
   query GetTimeRegister {
@@ -29,21 +28,6 @@ export const client = new ApolloClient({
   uri: `${import.meta.env.VITE_BASE_URL}`,
   cache: new InMemoryCache(),
 });
-
-// export const requestGetOrders = async () => {
-//   const token = localStorage.getItem("token");
-//   try {
-//     const response = await axios.get<OrderInterface[]>(`${import.meta.env.VITE_BASE_URL}orders`, {
-//       headers: {
-//         Authorization: token,
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching orders:", error);
-//     throw error;
-//   }
-// };
 
 export const requestGetOrders = async () => {
   try {

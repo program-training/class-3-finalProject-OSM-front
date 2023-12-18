@@ -2,7 +2,6 @@ import { Grid, Container, Box } from "@mui/material";
 import { BarChart, LineChart, PieChart } from "@mui/x-charts";
 import { OverviewTotalProfit } from "../components/OverviewTotalProfit";
 import { useEffect, useState } from "react";
-import { OrderInterface } from "../interface/orderInterface";
 import { HANDLE_ORDERS_STATUS_MUTATION, client, requestGetOrders } from "../requestsToServer/requestToOrders";
 import { GET_TIME_REGISTER, GET_ORDERS_FOR_HOURS } from "../requestsToServer/requestToOrders";
 
@@ -71,7 +70,8 @@ function OverviewSection() {
         const orders = await requestGetOrders();
         const ordersData = orders;
         const calculatedTotalPrice = ordersData.reduce((total, order) => {
-          return (total + order.price);}, 0);
+          return total + order.price;
+        }, 0);
         setTotalPrice(calculatedTotalPrice);
       } catch (error) {
         console.error("Error fetching data:", error);
