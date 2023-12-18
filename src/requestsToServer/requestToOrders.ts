@@ -72,7 +72,6 @@ export const requestDeleteOrder = async (id: string): Promise<{ _id: string }> =
         orderId: id,
       },
     });
-
     return data.deleteOrder;
   } catch (error) {
     console.error(`Error deleting order with ID }:`, error);

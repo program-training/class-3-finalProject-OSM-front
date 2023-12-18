@@ -8,19 +8,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
 
-
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
   Delivered: "#74ff03a0",
   Refunded: "#ff00009e",
 };
-
 const showToastMessage = () => {
   toast.success("The deletion was successful !", {
     position: toast.POSITION.TOP_LEFT,
   });
 };
-
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<CostumeOrders | null>(null);
@@ -86,7 +83,6 @@ export function LatestOrders() {
       ),
     },
   ];
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,16 +93,14 @@ export function LatestOrders() {
         console.error("Error fetching orders:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
 
   const handleRowClick = (params: GridCellParams) => {
     setSelectedOrder(params.row as CostumeOrders);
     setOpenDialog(true);
   };
-
   const handleDeleteOrder = async (event: React.MouseEvent<HTMLButtonElement>, orderId: string) => {
     event.stopPropagation();
     const isConfirmed = window.confirm("Are you sure you want to delete this order?");
@@ -116,67 +110,26 @@ export function LatestOrders() {
       showToastMessage();
     }
   };
-  const handleChangeStatus = async (orderId:string) => {
-
-   
-    await requestPutOrderStatus(orderId); 
-    
-   
-    const updatedOrders:OrderInterface[] = [...orders];
-  
-  
-    const order = orders.find(o => o._id === orderId);
-    if (order){
-    order.status = "Delivered";
-    }
-   
-    setOrders(updatedOrders);
-  
+  const handleChangeStatus = async (orderId: string) => {
+    await requestPutOrderStatus(orderId);
+    const response = (await requestGetOrders()).data;
     showToastMessage();
-  
-  }
-
-//  const handleChangeStatus = async (orderId: string) => {
-//    await requestPutOrderStatus(orderId);
-//     const response = (await requestGetOrders()).data;
-//     showToastMessage();
-//     setOrders(response.getAllOrders);
-//     } 
-    // await requestPutOrderStatus(orderId);
-    // const response = (await requestGetOrders()).data;
-    // showToastMessage();
-    // setOrders(response.getAllOrders);
-  // };
- 
-
-  // const costumeOrders = orders
-  //   ? orders.map((order: OrderInterface) => {
-  //       const temp = {
-  //         id: order._id,
-  //         price: order.price,
-  //         address: order.shippingDetails.address,
-  //         orderType: order.shippingDetails.orderType,
-  //         status: order.status,
-  //         orderTime: order.orderTime,
-  //         userId: order.shippingDetails.userId,
-  //       };
-  //       return temp;
-  //     })
-  //   : [];
+    setOrders(response.getAllOrders);
+  };
   const costumeOrders = orders
-  ? orders.map((order: OrderInterface) => {
-      const temp = {
-        id: order._id,
-        price: order.price,
-        address: order.shippingDetails && order.shippingDetails.address || "N/A",
-        orderType: order.shippingDetails && order.shippingDetails.orderType || "N/A",
-        status: order.status,
-        orderTime: order.orderTime,
-        userId: order.shippingDetails && order.shippingDetails.userId || "N/A",
-      };
-      return temp;
-    })
-  : [];
+    ? orders.map((order: OrderInterface) => {
+        const temp = {
+          id: order._id,
+          price: order.price,
+          address: (order.shippingDetails && order.shippingDetails.address) || "N/A",
+          orderType: (order.shippingDetails && order.shippingDetails.orderType) || "N/A",
+          status: order.status,
+          orderTime: order.orderTime,
+          userId: (order.shippingDetails && order.shippingDetails.userId) || "N/A",
+        };
+        return temp;
+      })
+    : [];
 
   return (
     <Box sx={{ margin: "20px" }}>
@@ -184,13 +137,13 @@ export function LatestOrders() {
         sx={{
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "#424242",
-            color: "#fafafa",
+            color: "#FAFAFA",
           },
           "& .MuiDataGrid-columnHeaders .MuiDataGrid-sortIcon": {
-            color: "#fafafa",
+            color: "#FAFAFA",
           },
           "& .MuiDataGrid-columnHeaders .MuiIconButton-root .MuiSvgIcon-root": {
-            color: "#fafafa",
+            color: "#FAFAFA",
           },
         }}
       >
