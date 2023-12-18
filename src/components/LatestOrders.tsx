@@ -8,7 +8,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
 
-
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
   Delivered: "#74ff03a0",
@@ -80,7 +79,7 @@ export function LatestOrders() {
       headerName: "Change Status",
       width: 200,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={(e) => handleChangeStatus(e,params.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
+        <Button onClick={(e) => handleChangeStatus(e, params.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
           Change Status
         </Button>
       ),
@@ -89,18 +88,11 @@ export function LatestOrders() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const data = (await requestGetOrders()).data;
-        console.log(data.getAllOrders);
-        setOrders(data.getAllOrders);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
+      const data = await requestGetOrders();
+      setOrders(data);
     };
-  
     fetchData();
   }, []);
-  
 
   const handleRowClick = (params: GridCellParams) => {
     setSelectedOrder(params.row as CostumeOrders);
@@ -116,38 +108,33 @@ export function LatestOrders() {
       showToastMessage();
     }
   };
-  const handleChangeStatus = async (event: React.MouseEvent<HTMLButtonElement>,orderId:string) => {
-
+  const handleChangeStatus = async (event: React.MouseEvent<HTMLButtonElement>, orderId: string) => {
     event.stopPropagation();
-    await requestPutOrderStatus(orderId); 
-    
-   
-    const updatedOrders:OrderInterface[] = [...orders];
-  
-  
-    const order = orders.find(o => o._id === orderId);
-    if (order){
-    order.status = "Delivered";
-    }
-   
-    setOrders(updatedOrders);
-  
-    showToastMessage();
-  
-  }
+    await requestPutOrderStatus(orderId);
 
-//  const handleChangeStatus = async (orderId: string) => {
-//    await requestPutOrderStatus(orderId);
-//     const response = (await requestGetOrders()).data;
-//     showToastMessage();
-//     setOrders(response.getAllOrders);
-//     } 
-    // await requestPutOrderStatus(orderId);
-    // const response = (await requestGetOrders()).data;
-    // showToastMessage();
-    // setOrders(response.getAllOrders);
+    const updatedOrders: OrderInterface[] = [...orders];
+
+    const order = orders.find((o) => o._id === orderId);
+    if (order) {
+      order.status = "Delivered";
+    }
+
+    setOrders(updatedOrders);
+
+    showToastMessage();
+  };
+
+  //  const handleChangeStatus = async (orderId: string) => {
+  //    await requestPutOrderStatus(orderId);
+  //     const response = (await requestGetOrders()).data;
+  //     showToastMessage();
+  //     setOrders(response.getAllOrders);
+  //     }
+  // await requestPutOrderStatus(orderId);
+  // const response = (await requestGetOrders()).data;
+  // showToastMessage();
+  // setOrders(response.getAllOrders);
   // };
- 
 
   // const costumeOrders = orders
   //   ? orders.map((order: OrderInterface) => {
@@ -164,19 +151,19 @@ export function LatestOrders() {
   //     })
   //   : [];
   const costumeOrders = orders
-  ? orders.map((order: OrderInterface) => {
-      const temp = {
-        id: order._id,
-        price: order.price,
-        address: order.shippingDetails && order.shippingDetails.address || "N/A",
-        orderType: order.shippingDetails && order.shippingDetails.orderType || "N/A",
-        status: order.status,
-        orderTime: order.orderTime,
-        userId: order.shippingDetails && order.shippingDetails.userId || "N/A",
-      };
-      return temp;
-    })
-  : [];
+    ? orders.map((order: OrderInterface) => {
+        const temp = {
+          id: order._id,
+          price: order.price,
+          address: (order.shippingDetails && order.shippingDetails.address) || "N/A",
+          orderType: (order.shippingDetails && order.shippingDetails.orderType) || "N/A",
+          status: order.status,
+          orderTime: order.orderTime,
+          userId: (order.shippingDetails && order.shippingDetails.userId) || "N/A",
+        };
+        return temp;
+      })
+    : [];
 
   return (
     <Box sx={{ margin: "20px" }}>

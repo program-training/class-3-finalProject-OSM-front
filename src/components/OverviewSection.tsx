@@ -6,7 +6,8 @@ import { OrderInterface } from "../interface/orderInterface";
 import { requestGetOrders } from "../requestsToServer/requestToOrders";
 import axios from "axios";
 // import { ApolloQueryResult } from "@apollo/client";
-
+import { client } from "../requestsToServer/requestToOrders";
+import { gql } from "@apollo/client";
 
 function OverviewSection() {
   const [totalPrice, setTotalPrice] = useState(0);
@@ -36,10 +37,19 @@ interface StatusOrderInterface{
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response =await axios.get(`${import.meta.env.VITE_BASE_URL}orders/get/getStatusOrder`);
-        setStatusOrder(response.data);
-        console.log(response.data);
-        
+        const {data} = await client.mutate({
+          mutation: gql`
+            mutation {
+              handleGetAllOrdersStatus {
+                Delivered
+                Pending
+                Refunded
+              }
+            }
+          `
+        });
+        const response = data.handleGetAllOrdersStatus;
+        setStatusOrder(response);
       } catch (error) {
         console.error("Error fetching registration data:", error);
       }
@@ -63,18 +73,10 @@ interface StatusOrderInterface{
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orders = (await requestGetOrders()).data;
-        const ordersData:{ getAllOrders: OrderInterface[] }= orders;
-
-        // setOrders(ordersData);
-        const calculatedTotalPrice = ordersData.getAllOrders.reduce((total, order) => {
-          return (
-            total +
-            order.cartItems.reduce((itemTotal, item) => {
-              return itemTotal + item.price * item.quantity;
-            }, 0)
-          );
-        }, 0);
+        const orders = await requestGetOrders();
+        const ordersData = orders;
+        const calculatedTotalPrice = ordersData.reduce((total, order) => {
+          return (total + order.price);}, 0);
         setTotalPrice(calculatedTotalPrice);
       } catch (error) {
         console.error("Error fetching data:", error);
