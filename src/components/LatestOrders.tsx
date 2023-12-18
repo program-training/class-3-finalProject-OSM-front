@@ -77,7 +77,7 @@ export function LatestOrders() {
       headerName: "Change Status",
       width: 200,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleChangeStatus(params.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
+        <Button onClick={(e) => handleChangeStatus(e,params.id.toString())} disabled={!params.row.orderType || params.row.orderType !== "Pickup" || params.row.status !== "Pending"}>
           Change Status
         </Button>
       ),
@@ -110,12 +110,14 @@ export function LatestOrders() {
       showToastMessage();
     }
   };
-  const handleChangeStatus = async (orderId: string) => {
+
+   const handleChangeStatus = async (orderId: string) => {
     await requestPutOrderStatus(orderId);
     const response = (await requestGetOrders()).data;
     showToastMessage();
     setOrders(response.getAllOrders);
   };
+  
   const costumeOrders = orders
     ? orders.map((order: OrderInterface) => {
         const temp = {
