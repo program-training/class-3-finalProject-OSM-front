@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { OrderInterface } from "../interface/orderInterface";
 import { requestGetOrders } from "../requestsToServer/requestToOrders";
 import axios from "axios";
-import { ApolloQueryResult } from "@apollo/client";
+// import { ApolloQueryResult } from "@apollo/client";
 
 
 function OverviewSection() {

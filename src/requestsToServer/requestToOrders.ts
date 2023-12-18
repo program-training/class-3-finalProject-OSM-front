@@ -1,4 +1,3 @@
-import axios from "axios";
 import { OrderInterface } from "../interface/orderInterface";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { gql } from "@apollo/client";
