@@ -3,6 +3,28 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { ApolloQueryResult } from "@apollo/client";
 
+export const GET_TIME_REGISTER = gql`
+  query GetTimeRegister {
+    getTimeRegister
+  }
+`;
+
+export const HANDLE_ORDERS_STATUS_MUTATION = gql`
+  mutation {
+    handleGetAllOrdersStatus {
+      Delivered
+      Pending
+      Refunded
+    }
+  }
+`;
+
+export const GET_ORDERS_FOR_HOURS = gql`
+  query GetOrdersForHours2 {
+    getOrdersForHours
+  }
+`;
+
 export const client = new ApolloClient({
   uri: `${import.meta.env.VITE_BASE_URL}`,
   cache: new InMemoryCache(),
@@ -65,7 +87,6 @@ export const requestDeleteOrder = async (id: string): Promise<{ _id: string }> =
         orderId: id,
       },
     });
-
     return data.deleteOrder;
   } catch (error) {
     console.error(`Error deleting order with ID }:`, error);
