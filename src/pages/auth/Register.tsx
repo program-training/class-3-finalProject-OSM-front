@@ -35,8 +35,7 @@ const Register = () => {
   });
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      //.env שנה לנתיב render כשיתעדכן
-      const response = await fetch(`http://localhost:8080/graphql`, {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -7,26 +7,22 @@ import { requestGetOrders, requestDeleteOrder, requestPutOrderStatus } from "../
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { gql } from "@apollo/client";
-
-const client = new ApolloClient({
-  uri: "http://localhost:8080/graphql",
-  cache: new InMemoryCache(),
-});
-
+// import { ApolloClient, InMemoryCache } from "@apollo/client";
+// import { gql} from "@apollo/client";
+// const client = new ApolloClient({
+//   uri: "http://localhost:8080/graphql",
+//   cache: new InMemoryCache(),
+// });
 const statusMap: { [key: string]: string } = {
   Pending: "#ffb84da9",
   Delivered: "#74ff03a0",
   Refunded: "#ff00009e",
 };
-
 const showToastMessage = () => {
   toast.success("The deletion was successful !", {
     position: toast.POSITION.TOP_LEFT,
   });
 };
-
 export function LatestOrders() {
   const [orders, setOrders] = useState<OrderInterface[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<CostumeOrders | null>(null);
@@ -92,42 +88,28 @@ export function LatestOrders() {
       ),
     },
   ];
-
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await client.query({
-        query: gql`
-          query GetAllOrders {
-            getAllOrders {
-              _id
-              price
-              shippingDetails {
-                address
-              }
-              shippingDetails {
-                orderType
-              }
-              status
-              orderTime
-              shippingDetails {
-                userId
-              }
-            }
-          }
-        `,
-      });
-      console.log(data.getAllOrders);
-      setOrders(data.getAllOrders);
+      try {
+        const data = (await requestGetOrders()).data;
+        console.log(data.getAllOrders);
+        setOrders(data.getAllOrders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
     };
-
     fetchData();
   }, []);
-
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await requestGetOrders();
+  //   };
+  //   fetchData();
+  // }, []);
   const handleRowClick = (params: GridCellParams) => {
     setSelectedOrder(params.row as CostumeOrders);
     setOpenDialog(true);
   };
-
   const handleDeleteOrder = async (event: React.MouseEvent<HTMLButtonElement>, orderId: string) => {
     event.stopPropagation();
     const isConfirmed = window.confirm("Are you sure you want to delete this order?");
@@ -137,14 +119,12 @@ export function LatestOrders() {
       showToastMessage();
     }
   };
-
   const handleChangeStatus = async (orderId: string) => {
     await requestPutOrderStatus(orderId);
-    const response = await requestGetOrders();
+    const response = (await requestGetOrders()).data;
     showToastMessage();
-    setOrders(response);
+    setOrders(response.getAllOrders);
   };
-
   const costumeOrders = orders
     ? orders.map((order: OrderInterface) => {
         const temp = {
@@ -165,13 +145,13 @@ export function LatestOrders() {
         sx={{
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "#424242",
-            color: "#fafafa",
+            color: "#FAFAFA",
           },
           "& .MuiDataGrid-columnHeaders .MuiDataGrid-sortIcon": {
-            color: "#fafafa",
+            color: "#FAFAFA",
           },
           "& .MuiDataGrid-columnHeaders .MuiIconButton-root .MuiSvgIcon-root": {
-            color: "#fafafa",
+            color: "#FAFAFA",
           },
         }}
       >
