@@ -23,7 +23,7 @@ function OverviewSection() {
         const { data } = await client.query({
           query: GET_TIME_REGISTER,
         });
-        const registrationsData = data.getTimeRegister;
+        const registrationsData = data.getRegisterTime;
         setRegistrationsData(registrationsData);
       } catch (error) {
         console.error("Error fetching registration data:", error);
@@ -54,9 +54,9 @@ function OverviewSection() {
         const { data } = await client.query({
           query: GET_ORDERS_FOR_HOURS,
         });
-        const response = { data: { getOrdersForHours: data.getOrdersForHours } };
-        setOrderTime(response.data.getOrdersForHours);
-        console.log(response.data);
+        const response = { data: { getOrdersForHoursQuery: data.getOrdersForHoursQuery } };
+        setOrderTime(response.data.getOrdersForHoursQuery);
+        console.log(response.data.getOrdersForHoursQuery);
       } catch (error) {
         console.error("Error fetching orders data:", error);
       }

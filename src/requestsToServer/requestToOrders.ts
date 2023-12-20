@@ -3,8 +3,8 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { gql } from "@apollo/client";
 
 export const GET_TIME_REGISTER = gql`
-  query GetTimeRegister {
-    getTimeRegister
+  query Query {
+    getRegisterTime
   }
 `;
 
@@ -20,7 +20,7 @@ export const HANDLE_ORDERS_STATUS_MUTATION = gql`
 
 export const GET_ORDERS_FOR_HOURS = gql`
   query GetOrdersForHours2 {
-    getOrdersForHours
+    getOrdersForHoursQuery
   }
 `;
 
